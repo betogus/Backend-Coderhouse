@@ -57,10 +57,11 @@ class Contenedor {
             try {
                 const productos = await fs.promises.readFile(this.pathToFile, 'utf-8')
                 const productosJs = JSON.parse(productos)
+                
                 if (productosJs === []) return "No hay productos en el archivo " + this.pathToFile
                 return productosJs
             } catch {
-                return "No se pudieron eliminar los productos"
+                return "No se pudieron mostrar los productos"
             }
         } else {
             return "No existe el archivo " + this.pathToFile

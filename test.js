@@ -1,5 +1,5 @@
 const Contenedor = require("./contenedor.js") 
-const contenedor = new Contenedor('./productos.json')
+const contenedor = new Contenedor('./productos.txt')
 
 let product1 = {
     title: 'Escuadra',
@@ -31,7 +31,7 @@ const ejecutarAcciones = () => {
      //contenedor.save(product1).then(result => console.log(result))
      //contenedor.save(product2).then(result => console.log(result))
      //contenedor.save(product3).then(result => console.log(result))
-     //contenedor.save(product4).then(result => console.log(result))
+     //contenedor.save(product5).then(result => console.log(result))
 
      //contenedor.getAll().then(result => console.log(result))
      //contenedor.getById(2).then(result => console.log(result))
@@ -39,4 +39,5 @@ const ejecutarAcciones = () => {
      //contenedor.deleteAll().then(result=>console.log(result))
 }
 
+ejecutarAcciones()
 module.exports = ejecutarAcciones
