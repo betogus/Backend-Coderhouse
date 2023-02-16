@@ -7,6 +7,7 @@ class Contenedor {
     async save(obj) {
         const productos = await fs.promises.readFile(this.pathToFile, 'utf-8')
         const productosJs = JSON.parse(productos)
+
         if (fs.existsSync(this.pathToFile)) {
             if (productosJs.length) {
                 try {
@@ -57,7 +58,7 @@ class Contenedor {
             try {
                 const productos = await fs.promises.readFile(this.pathToFile, 'utf-8')
                 const productosJs = JSON.parse(productos)
-                
+
                 if (productosJs === []) return "No hay productos en el archivo " + this.pathToFile
                 return productosJs
             } catch {
@@ -108,6 +109,28 @@ class Contenedor {
             return "No existe el archivo " + this.pathToFile
         }
 
+    }
+    async modifyById(id, obj) {
+        const productos = await fs.promises.readFile(this.pathToFile, 'utf-8')
+        const productosJs = JSON.parse(productos)
+        if (fs.existsSync(this.pathToFile)) {
+            if (productosJs.find(item => item.id === id)) {
+                try {
+                    let newProductos = productosJs.filter(item => item.id !== id)
+                    let producto = obj
+                    producto.id = id
+                    newProductos.push(producto)
+                    await fs.promises.writeFile(this.pathToFile, JSON.stringify(newProductos, null, 2))
+                    return `Se modificó con éxito. El id del producto es ${id}`
+                } catch {
+                    return 'Error al sobreescribir el archivo ' + this.pathToFile
+                }
+            } else {
+                return 'No existe un producto con ese id'
+            }
+        } else {
+            return "No existe el archivo " + this.pathToFile
+        }
     }
 }
 

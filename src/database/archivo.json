@@ -9,12 +9,6 @@
     "title": "Escuadra",
     "price": 123.45,
     "thumbnail": "algo",
-    "id": 2
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
     "id": 3
   },
   {
@@ -178,5 +172,17 @@
     "price": 123.45,
     "thumbnail": "algo",
     "id": 30
+  },
+  {
+    "title": "Escuadra",
+    "price": 123.45,
+    "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png",
+    "id": 31
+  },
+  {
+    "title": "Beto",
+    "price": "123",
+    "thumbnail": "1676581218373-Desarrollo Web Frontend React.png",
+    "id": 32
   }
 ]
