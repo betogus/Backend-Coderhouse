@@ -10,7 +10,6 @@ const server = app.listen(PORT, () => console.log('Server Up!'))
 app.use(express.json())
 app.use(express.static('public'))
 
-/* MIDDLEWARES */
 
 
 /* RUTAS */
