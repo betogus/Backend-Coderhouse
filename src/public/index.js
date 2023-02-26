@@ -17,3 +17,4 @@ const handleSubmit = (evt, form, route) => {
 }
 
 usersForm.addEventListener('submit', (e) => handleSubmit(e, e.target, '/api/productos'))
+

@@ -184,5 +184,101 @@
     "price": "123",
     "thumbnail": "1676581218373-Desarrollo Web Frontend React.png",
     "id": 32
+  },
+  {
+    "title": "empanadas",
+    "price": "333",
+    "thumbnail": "1677390595498-splash (1).png",
+    "id": 33
+  },
+  {
+    "title": "empanadas",
+    "price": "333",
+    "thumbnail": "1677390616068-splash (1).png",
+    "id": 34
+  },
+  {
+    "title": "hamburguesa",
+    "price": "333",
+    "thumbnail": "1677390633374-splash (1).png",
+    "id": 35
+  },
+  {
+    "title": "Tomate",
+    "price": "12",
+    "thumbnail": "1677390688594-splash (1).png",
+    "id": 36
+  },
+  {
+    "title": "Tomate",
+    "price": "12",
+    "thumbnail": "1677390727639-splash (1).png",
+    "id": 37
+  },
+  {
+    "title": "Caramelos",
+    "price": "34",
+    "thumbnail": "1677390745555-splash (1).png",
+    "id": 38
+  },
+  {
+    "title": "Caramelos",
+    "price": "34",
+    "thumbnail": "1677390808438-splash (1).png",
+    "id": 39
+  },
+  {
+    "title": "Lomo",
+    "price": "23",
+    "thumbnail": "1677380469515-splash (1).png",
+    "id": 40
+  },
+  {
+    "title": "Pizza",
+    "price": "1",
+    "thumbnail": "1677380623038-splash (1).png",
+    "id": 41
+  },
+  {
+    "title": "Fajitas",
+    "price": "32",
+    "thumbnail": "1677380711160-splash (1).png",
+    "id": 42
+  },
+  {
+    "title": "pescado",
+    "price": "23",
+    "thumbnail": "1677380748371-splash (1).png",
+    "id": 43
+  },
+  {
+    "title": "carne",
+    "price": "324",
+    "thumbnail": "1677380866452-splash (1).png",
+    "id": 44
+  },
+  {
+    "title": "Cometa",
+    "price": "23",
+    "thumbnail": "1677380969820-splash (1).png",
+    "id": 45
+  },
+  {
+    "title": "cocina",
+    "price": "23",
+    "thumbnail": "1677381192157-splash (1).png",
+    "id": 46
+  },
+  {
+    "title": "cocina",
+    "price": "23",
+    "thumbnail": "1677381196228-splash (1).png",
+    "id": 47
+  },
+  {
+    "title": "compu",
+    "price": "23",
+    "thumbnail": "1677381330244-splash (1).png",
+    "id": 48
   }
 ]

@@ -1,0 +1,49 @@
+<h1>Vista de Productos</h1>
+{{#if productos}}
+    {{#each productos}}
+        <table>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Foto</th>
+            </tr> 
+            <tr>
+                <td>{{this.title}}</td>
+                <td>{{this.price}}</td>
+                <td><img src="/uploads/{{this.thumbnail}}" class="foto"/></td>
+            </tr>
+        </table>
+    {{/each}}
+{{else}}
+    <h2>No hay productos por mostrar</h2>
+{{/if}}
+
+<button id="button"><a href='/'>Ir al formulario</a></button>
+<style>
+    table {
+    background-color: #1f1e1e;
+    color: #ffffff;
+    width: 400px;
+    padding: 10px;
+    text-align: center;
+    
+    }
+    .foto {
+        object-fit: contain;
+        max-width: 30px;
+    }
+    #button {
+            margin-top: 10px;
+            background: green;
+            color: #ffffff;
+            width: 150px;
+            height: 30px;
+    }
+    h1 {
+        color: blue;
+    }
+    a {
+        text-decoration: none;
+        color: white;
+    }
+</style>

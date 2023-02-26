@@ -35,7 +35,7 @@ router.use(multer({storage}).single('thumbnail'))
 router.get('/', async (req, res) => {
     let productos;
     await contenedor.getAll().then(result => productos = result)
-    res.send(productos)
+    res.render('dashboard', {productos})
 })
 
 router.get('/:id', async (req, res) => {
@@ -47,10 +47,10 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', noEmptyFields, async (req, res) => {
     let producto = req.body
+    let mensaje
     producto.thumbnail = req.file.filename
-    let mensaje;
     await contenedor.save(producto).then(result => mensaje = result)
-    res.send(mensaje)
+    res.redirect('/api/productos')
 })
 
 router.put('/:id', noEmptyFields, async (req, res) => {
