@@ -1,24 +1,28 @@
-<h1>Vista de Productos</h1>
-{{#if productos}}
-    {{#each productos}}
-        <table>
-            <tr>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Foto</th>
-            </tr> 
-            <tr>
-                <td>{{this.title}}</td>
-                <td>{{this.price}}</td>
-                <td><img src="/uploads/{{this.thumbnail}}" class="foto"/></td>
-            </tr>
-        </table>
-    {{/each}}
-{{else}}
-    <h2>No hay productos por mostrar</h2>
-{{/if}}
+<h1>Formulario de productos</h1>
+<form id="productForm" action="/api/productos" enctype="multipart/form-data" method="POST">
+    <label>Título:</label>
+    <input type="text" name="title" required/>
+    <label>Precio:</label>
+    <input type="number" name="price" required/>
+    <label>Inserte una imagen:</label>
+    <input type="file" name="thumbnail" required/>
+    <input type="submit" value="Subir Archivo" />
+</form>
+<div id="empyFields"></div>
+<h1 id="titulo">Vista de Productos</h1>
+<div id="table"></div>
+<div id="messageContainer">
+    <h1>Centro de Mensajes</h1>
+    <form id="formMessages">
+         <input type="email" placeholder="tuemail@tuemail.com" name="email" id="email" required/>
+         <p id="history"></p>
+         <input id="chatBox" required/>
+         <input id="sendMessage" type="submit" value="Enviar"/>
+    </form>
+</div>
 
-<button id="button"><a href='/'>Ir al formulario</a></button>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/public/index.js"></script>
 <style>
     table {
     background-color: #1f1e1e;
@@ -45,5 +49,16 @@
     a {
         text-decoration: none;
         color: white;
+    }
+    .email {
+        color: blue;
+    }
+    .date {
+       color: red; 
+    }
+    .message {
+        color: green;
+        font-style: italic;
+
     }
 </style>

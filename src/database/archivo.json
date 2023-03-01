@@ -6,279 +6,33 @@
     "id": 1
   },
   {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
+    "title": "cartera",
+    "price": "23",
+    "thumbnail": "1677435457935-splash (1).png",
+    "id": 2
+  },
+  {
+    "title": "auto",
+    "price": "123",
+    "thumbnail": "1677437127367-splash (1).png",
     "id": 3
   },
   {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
+    "title": "camion",
+    "price": "234",
+    "thumbnail": "1677437598093-splash (1).png",
     "id": 4
   },
   {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
+    "title": "camion",
+    "price": "234",
+    "thumbnail": "1677437609844-splash (1).png",
     "id": 5
   },
   {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
+    "title": "billetera",
+    "price": "23",
+    "thumbnail": "1677694107936-splash (1).png",
     "id": 6
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 7
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 8
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 9
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 10
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 11
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 12
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 13
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 14
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 15
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 16
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 17
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 18
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 19
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 20
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 21
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 22
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 23
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 24
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 25
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 26
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 27
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 28
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 29
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "algo",
-    "id": 30
-  },
-  {
-    "title": "Escuadra",
-    "price": 123.45,
-    "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png",
-    "id": 31
-  },
-  {
-    "title": "Beto",
-    "price": "123",
-    "thumbnail": "1676581218373-Desarrollo Web Frontend React.png",
-    "id": 32
-  },
-  {
-    "title": "empanadas",
-    "price": "333",
-    "thumbnail": "1677390595498-splash (1).png",
-    "id": 33
-  },
-  {
-    "title": "empanadas",
-    "price": "333",
-    "thumbnail": "1677390616068-splash (1).png",
-    "id": 34
-  },
-  {
-    "title": "hamburguesa",
-    "price": "333",
-    "thumbnail": "1677390633374-splash (1).png",
-    "id": 35
-  },
-  {
-    "title": "Tomate",
-    "price": "12",
-    "thumbnail": "1677390688594-splash (1).png",
-    "id": 36
-  },
-  {
-    "title": "Tomate",
-    "price": "12",
-    "thumbnail": "1677390727639-splash (1).png",
-    "id": 37
-  },
-  {
-    "title": "Caramelos",
-    "price": "34",
-    "thumbnail": "1677390745555-splash (1).png",
-    "id": 38
-  },
-  {
-    "title": "Caramelos",
-    "price": "34",
-    "thumbnail": "1677390808438-splash (1).png",
-    "id": 39
-  },
-  {
-    "title": "Lomo",
-    "price": "23",
-    "thumbnail": "1677380469515-splash (1).png",
-    "id": 40
-  },
-  {
-    "title": "Pizza",
-    "price": "1",
-    "thumbnail": "1677380623038-splash (1).png",
-    "id": 41
-  },
-  {
-    "title": "Fajitas",
-    "price": "32",
-    "thumbnail": "1677380711160-splash (1).png",
-    "id": 42
-  },
-  {
-    "title": "pescado",
-    "price": "23",
-    "thumbnail": "1677380748371-splash (1).png",
-    "id": 43
-  },
-  {
-    "title": "carne",
-    "price": "324",
-    "thumbnail": "1677380866452-splash (1).png",
-    "id": 44
-  },
-  {
-    "title": "Cometa",
-    "price": "23",
-    "thumbnail": "1677380969820-splash (1).png",
-    "id": 45
-  },
-  {
-    "title": "cocina",
-    "price": "23",
-    "thumbnail": "1677381192157-splash (1).png",
-    "id": 46
-  },
-  {
-    "title": "cocina",
-    "price": "23",
-    "thumbnail": "1677381196228-splash (1).png",
-    "id": 47
-  },
-  {
-    "title": "compu",
-    "price": "23",
-    "thumbnail": "1677381330244-splash (1).png",
-    "id": 48
   }
 ]

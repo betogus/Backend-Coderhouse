@@ -3,143 +3,250 @@
 ## API RESTful
 
 **Consigna:**
-Realizar un proyecto de servidor basado en node.js y express que
-ofrezca una API RESTful de productos. En detalle, que incorpore las siguientes
-rutas:
-● GET '/api/productos' -> devuelve todos los productos.
-● GET '/api/productos/:id' -> devuelve un producto según su id.
-● POST '/api/productos' -> recibe y agrega un producto, y lo devuelve con su id
-asignado.
-● PUT '/api/productos/:id' -> recibe y actualiza un producto según su id.
-● DELETE '/api/productos/:id' -> elimina un producto según su id.
-Cada producto estará representado por un objeto con el siguiente formato:
-- Cada ítem almacenado dispondrá de un id numérico proporcionado por el backend,
-comenzando en 1, y que se irá incrementando a medida de que se incorporen
-productos. Ese id será utilizado para identificar un producto que va a ser listado en
-forma individual.
-Para el caso de que un producto no exista, se devolverá el objeto:
-{ error : 'producto no encontrado' }
-- Implementar la API en una clase separada, utilizando un array como soporte de
-persistencia en memoria.
-- Incorporar el Router de express en la url base '/api/productos' y configurar todas las
-subrutas en base a este.
-- Crear un espacio público de servidor que contenga un documento index.html con un
-formulario de ingreso de productos con los datos apropiados.
-- El servidor debe estar basado en express y debe implementar los mensajes de conexión
-al puerto 8080 y en caso de error, representar la descripción del mismo.
-- Las respuestas del servidor serán en formato JSON. La funcionalidad será probada a
-través de Postman y del formulario de ingreso.
+1) Modificar el último entregable para que disponga de un canal de websocket que
+permita representar, por debajo del formulario de ingreso, una tabla con la lista de productos en
+tiempo real.
+- Puede haber varios clientes conectados simultáneamente y en cada uno de ellos se reflejarán
+los cambios que se realicen en los productos sin necesidad de recargar la vista.
+- Cuando un cliente se conecte, recibirá la lista de productos a representar en la vista.
+2) Añadiremos al proyecto un canal de chat entre los clientes y el servidor.
+- En la parte inferior del formulario de ingreso se presentará el centro de mensajes almacenados en el
+servidor, donde figuren los mensajes de todos los usuarios identificados por su email.
+- El formato a representar será: email (texto negrita en azul) [fecha y hora (DD/MM/YYYY
+HH:MM:SS)](texto normal en marrón) : mensaje (texto italic en verde)
+- Además incorporar dos elementos de entrada: uno para que el usuario ingrese su email (obligatorio
+para poder utilizar el chat) y otro para ingresar mensajes y enviarlos mediante un botón.
+- Los mensajes deben persistir en el servidor en un archivo (ver segundo entregable).
 
-> Solución:
+> 1) Solución: Websocket en la lista de Productos
 
 
-> > Instalamos handlebars
+> > Instalamos socket
 
 ```
-npm i express-handlebars
+npm i socket.io
 ```
 
-> > Configuramos el app.js para utilizar handlebars
+> > Importamos la librería y realizamos la configuración en app.js
 
 ```
-const handlebars = require('express-handlebars')
-app.engine('handlebars', handlebars.engine()) //establecemos la configuracion de handlebars
-app.set('views', './src/public/views/handlebars') //establecemos el directorio donde se encuentran los archivos de plantilla
-app.set('view engine', 'handlebars') //establecemos el motor de plantilla que se utiliza
+const { Server} = require('socket.io')
+const io = new Server(server)
 ```
 
-> > Creamos el archivo main.handlebars dentro de src/public/views/handlebars/layouts. En el body es donde se van a renderizar los demás archivos handlebars
+> > Incorporamos el script de socket en el dashboard e inicializamos el canal de Websocket. Esta inicialización lo haremos desde un script llamado index.js que se encuentra en la carpeta public. Nuestro dashboard.handlebars quedaría de la siguiente manera:
 
 ```
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desafio 3</title>
-</head>
-<body>
-    {{{body}}}
-</body>
-</html>
+<h1>Formulario de productos</h1>
+<form id="productForm" action="/api/productos" enctype="multipart/form-data" method="POST">
+    <label>Título:</label>
+    <input type="text" name="title" required/>
+    <label>Precio:</label>
+    <input type="number" name="price" required/>
+    <label>Inserte una imagen:</label>
+    <input type="file" name="thumbnail" required/>
+    <input type="submit" value="Subir Archivo" />
+</form>
+<div id="empyFields"></div>
+<h1 id="titulo">Vista de Productos</h1>
+<div id="table"></div>
 
+<script src="/socket.io/socket.io.js"></script>
+<script src="/public/index.js"></script>
 ```
 
-> > Creamos el archivo dashboard.handlebars que se encuentra en src/public/views/handlebars. Le agregamos el botón para volver al formulario. Además, utilizaremos la ruta del src de las img como /uploads
+> > Para que me reconozca el directorio donde se encuentra el index, debemos poner lo siguiente en app.js:
 
 ```
-<h1>Vista de Productos</h1>
-{{#if productos}}
-    {{#each productos}}
-        <table>
+app.use('/public', express.static('src/public'))
+```
+
+> > En el index.js haremos la tabla de los productos, inicializamos socket desde el cliente, y enviaremos al backend el formulario. Para el formulario debemos hacer un fetch cuyo body sea el formData
+
+```
+const socket = io()
+
+/* CONFIGURACION DEL FORMULARIO DE PRODUCTOS */
+
+//Envio del formulario
+let productForm = document.getElementById('productForm')
+const handleSubmit = (evt, form, route) => {
+    evt.preventDefault()
+    let formData = new FormData(form)
+    fetch(route, {
+        method: "POST",
+        body: formData
+    })
+}
+
+productForm.addEventListener('submit', (e) => handleSubmit(e, e.target, '/api/productos'))
+
+//visualización de la tabla
+const renderTable = (productos) => {
+    let contenido = ''
+    if (productos) {
+        contenido =
+        `<table>
             <tr>
                 <th>Nombre</th>
                 <th>Precio</th>
                 <th>Foto</th>
-            </tr> 
+            </tr>`
+        productos.map(producto => {
+            contenido += `
             <tr>
-                <td>{{this.title}}</td>
-                <td>{{this.price}}</td>
-                <td><img src="/uploads/{{this.thumbnail}}" class="foto"/></td>
-            </tr>
-        </table>
-    {{/each}}
-{{else}}
-    <h2>No hay productos por mostrar</h2>
-{{/if}}
+                <td>${producto.title}</td>
+                <td>${producto.price}</td>
+                <td><img src="/uploads/${producto.thumbnail}" class="foto"/></td>
+            </tr>`
+        })
+        contenido += `</table>`
+    } else {
+        contenido = `<h2> No hay productos por mostrar </h2>`
+    }
+    return contenido
+} 
+socket.on('products', data => {
+    
+    document.getElementById('table').innerHTML = renderTable(data)
+})
 
-<button id="button"><a href='/'>Ir al formulario</a></button>
 ```
 
-> > Para que me reconozca la ruta de la imagen que se encuentra en src/database/uploads, debemos configurar el app.js 
+> > En app.js ahora quitaremos el product.html y lo redirigiremos directamente al /api/productos. Además estableceremos la conexión socket con el cliente
 
 ```
-app.use('/uploads', express.static('src/database/uploads'))
+app.get('/',  (req, res) => {
+    res.redirect('/api/productos')
+})
+
+/* WEBSOCKET */
+
+io.on('connection', async socket => {
+    console.log('Socket connected!')
+    let productos;
+    await contenedor.getAll().then(result => productos = result)
+    socket.emit('products', productos)
+})
 ```
 
-
-> > Modificamos la ruta GET dentro de productRouter para que me renderice el dashboard y le pasamos los productos
+> > Finalmente modificamos las rutas /api/productos de los métodos GET y POST dentro de productRouter
 
 ```
 router.get('/', async (req, res) => {
-    let productos;
-    await contenedor.getAll().then(result => productos = result)
-    res.render('dashboard', {productos})
+    res.render('dashboard')
 })
-```
 
-> > Modificamos la ruta POST dentro de productRouter para que me redirija al metodo GET
-
-```
 router.post('/', noEmptyFields, async (req, res) => {
     let producto = req.body
-    let mensaje
     producto.thumbnail = req.file.filename
-    await contenedor.save(producto).then(result => mensaje = result)
-    res.redirect('/api/productos')
+    await contenedor.save(producto).then(result =>  result)
 })
 ```
 
-> > Ahora haremos el mismo procedimiento pero utilizando pug. Instalamos pug
+> 2) Solución: Websocket en el chat
+
+
+> > Creamos nuestro div de centro de mensajes en el dashboard.handlebars
 
 ```
-npm i pug
+<div id="messageContainer">
+    <h1>Centro de Mensajes</h1>
+    <form id="formMessages">
+         <input type="email" placeholder="tuemail@tuemail.com" name="email" id="email" required/>
+         <p id="history"></p>
+         <input id="chatBox" required/>
+         <input id="sendMessage" type="submit" value="Enviar"/>
+    </form>
+</div>
 ```
 
-> > Importamos pug en el app.js
+> > Permitiremos que el usuario pueda enviar su mensaje al ingresar su email y apretando en el botón Enviar o simplemente haciendo enter. Para ello modificamos el index:
 
 ```
-npm i pug
+/* CENTRO DE MENSAJES */
+
+let sendMessage = document.getElementById('sendMessage')
+let email = document.getElementById('email')
+let chatBox = document.getElementById('chatBox')
+let history = document.getElementById('history')
+const fecha = new Date()
+
+
+//Envio del mensaje
+
+sendMessage.addEventListener('click', (e) => {
+    e.preventDefault()
+    if (chatBox.value.trim().length > 0 && email.value) { //el trim quita los espacios en blanco
+        socket.emit('message', {
+            email: email.value,
+            message: chatBox.value.trim(),
+            date: fecha.toLocaleString()
+        }) //enviamos al app.js el {user, message}
+        chatBox.value = ""
+    }
+})
+
+chatBox.addEventListener('keyup', e => {
+    if (email) {
+        if (e.key === "Enter") {
+            if (chatBox.value.trim().length > 0) { //el trim quita los espacios en blanco
+                socket.emit('message', {
+                    email,
+                    message: chatBox.value.trim(),
+                    date: date
+                }) //enviamos al app.js el {user, message}
+                chatBox.value = ""
+            }
+        }
+    }
+
+})
+
 ```
-
-
-> > Creamos el archivo dashboard.pug dentro de src/public/views/pug y en app.js hacemos la configuracion
+> > Desde el backend en app.js creamos dos funciones: una para escribir en un archivo el historial de mensajes, y otro para leerlo. En primer lugar lo leemos y lo guardamos en la variable history. Traemos del front el mensaje del usuario, la agregamos al historial y la emitimos de vuelta con el io.emit. Además debemos enviar el historial a los usuarios que recién se conectan con un socket.emit
 
 ```
-app.set('view engine', 'pug')
-app.set('views', './src/public/views/pug')
+io.on('connection', async socket => {
+
+    /* PRODUCTOS */
+    ...
+
+
+    /* MENSAJES */
+    history = readHistoryOfMessages()
+    socket.on('message', data => { //recibimos del index.js el {email, message}
+        history.push(data)
+        io.emit('history', history) //enviamos a index.js el log a todos los usuarios
+        writeHistoryOfMessages(history)
+    })
+    socket.emit('history', history) //Para que el que se conecte, le lleguen todos los chats
+})
+
+/* Agregamos el historial de chat a un archivo messages.txt */
+
+const writeHistoryOfMessages = (messages) => {
+    console.log(messages)
+    messages = JSON.stringify((messages), null, 2)
+    try {
+        fs.writeFileSync("./src/database/messages.txt", messages)
+        console.log({
+            message: "se añadio con exito",
+            messages
+        })
+    } catch (err) {
+        console.log('Error en la escritura', err)
+    }
+}
+
+const readHistoryOfMessages = () => {
+    try {
+        let data = fs.readFileSync("./src/database/messages.txt", 'utf8');
+        history = data.length > 0 ? JSON.parse(data) : [];
+    } catch (err) {
+        console.log('Error en la lectura del archivo', err)
+    }
+    return history
+}
+
 ```
-
-> > Del mismo modo haríamos con EJS
-

@@ -8,16 +8,6 @@ const multer = require('multer')
 /* MANEJO DE PRODUCTOS */
 const contenedor = new Contenedor(ruta)
 
-/* MIDDLEWARES */
-
-const noEmptyFields = (req, res, next) => {
-    let producto = req.body
-    let thumbnail = req.file
-    if (!producto.title || !producto.price || !thumbnail) return res.status(400).send({error: "Hay campos vacíos"})
-    next()
-}
-
-
 /* MULTER */
 
 const storage = multer.diskStorage({
@@ -28,18 +18,31 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + '-' + file.originalname)
     }
 })
-
 router.use(multer({storage}).single('thumbnail'))
+
+/* MIDDLEWARES */
+
+const noEmptyFields = (req, res, next) => {
+    let producto = req.body
+    let thumbnail = req.file
+    if (!producto.title || !producto.price || !thumbnail) return res.status(400).send({
+        error: "Hay campos vacíos"
+    })
+    next()
+}
+
 
 /* RUTAS */
 router.get('/', async (req, res) => {
     let productos;
-    await contenedor.getAll().then(result => productos = result)
-    res.render('dashboard', {productos})
+    //await contenedor.getAll().then(result => productos = result)
+    res.render('dashboard')
 })
 
 router.get('/:id', async (req, res) => {
-    let {id} = req.params
+    let {
+        id
+    } = req.params
     let producto;
     await contenedor.getById(parseInt(id)).then(result => producto = result)
     res.send(producto)
@@ -47,14 +50,14 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', noEmptyFields, async (req, res) => {
     let producto = req.body
-    let mensaje
     producto.thumbnail = req.file.filename
-    await contenedor.save(producto).then(result => mensaje = result)
-    res.redirect('/api/productos')
+    await contenedor.save(producto).then(result =>  result)
 })
 
 router.put('/:id', noEmptyFields, async (req, res) => {
-    let {id} = req.params
+    let {
+        id
+    } = req.params
     let producto = req.body
     let mensaje;
     await contenedor.modifyById(parseInt(id), producto).then(result => mensaje = result)
@@ -62,7 +65,9 @@ router.put('/:id', noEmptyFields, async (req, res) => {
 })
 
 router.delete('/:id', async (req, res) => {
-    let {id} = req.params
+    let {
+        id
+    } = req.params
     let mensaje;
     await contenedor.deleteById(parseInt(id)).then(result => mensaje = result)
     res.send(mensaje)
