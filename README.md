@@ -1,252 +1,181 @@
-# Desafio 4 
-
-## API RESTful
-
-**Consigna:**
-1) Modificar el último entregable para que disponga de un canal de websocket que
-permita representar, por debajo del formulario de ingreso, una tabla con la lista de productos en
-tiempo real.
-- Puede haber varios clientes conectados simultáneamente y en cada uno de ellos se reflejarán
-los cambios que se realicen en los productos sin necesidad de recargar la vista.
-- Cuando un cliente se conecte, recibirá la lista de productos a representar en la vista.
-2) Añadiremos al proyecto un canal de chat entre los clientes y el servidor.
-- En la parte inferior del formulario de ingreso se presentará el centro de mensajes almacenados en el
-servidor, donde figuren los mensajes de todos los usuarios identificados por su email.
-- El formato a representar será: email (texto negrita en azul) [fecha y hora (DD/MM/YYYY
-HH:MM:SS)](texto normal en marrón) : mensaje (texto italic en verde)
-- Además incorporar dos elementos de entrada: uno para que el usuario ingrese su email (obligatorio
-para poder utilizar el chat) y otro para ingresar mensajes y enviarlos mediante un botón.
-- Los mensajes deben persistir en el servidor en un archivo (ver segundo entregable).
-
-> 1) Solución: Websocket en la lista de Productos
-
-
-> > Instalamos socket
+> > instalamos knex, mysql y sqlite3. Levantamos el servidor abriendo el panel de control de Xampp y activando Apache y MySWL (puede que sea necesario crear la base de datos antes de usarla). Creamos la carpeta options dentro de src, donde tendremos el mysql.config.js. Verificar si el mismo tiene password. Puede que no tenga, puede que sea "root" o "password". 
 
 ```
-npm i socket.io
+const configMySQL = {
+    client: 'mysql',
+    connection: {
+        host: '127.0.0.1',
+        user: 'root',
+        password: 'password',
+        database: 'pruebamysql'
+    }
+}
 ```
 
-> > Importamos la librería y realizamos la configuración en app.js
+> > En src/models/Contenedor.js modificamos la clase, de tal manera que utilice knex y que le pasemos por parámetro la configuración y el nombre de la tabla.
 
 ```
-const { Server} = require('socket.io')
-const io = new Server(server)
-```
+const knex = require('knex')
 
-> > Incorporamos el script de socket en el dashboard e inicializamos el canal de Websocket. Esta inicialización lo haremos desde un script llamado index.js que se encuentra en la carpeta public. Nuestro dashboard.handlebars quedaría de la siguiente manera:
+class Contenedor {
+    constructor(config, table) {
+        this.db = knex(config)
+        this.table = table
 
-```
-<h1>Formulario de productos</h1>
-<form id="productForm" action="/api/productos" enctype="multipart/form-data" method="POST">
-    <label>Título:</label>
-    <input type="text" name="title" required/>
-    <label>Precio:</label>
-    <input type="number" name="price" required/>
-    <label>Inserte una imagen:</label>
-    <input type="file" name="thumbnail" required/>
-    <input type="submit" value="Subir Archivo" />
-</form>
-<div id="empyFields"></div>
-<h1 id="titulo">Vista de Productos</h1>
-<div id="table"></div>
+    }
+    createTable = async () => {
+        await this.db.schema.createTable(this.table, table => {
+                table.increments('id');
+                table.string('title');
+                table.decimal('price');
+                table.string('thumbnail');
+            })
+            .then(console.log('Table created!'))
+            .catch(err => console.log('Ya existe la tabla'))
+    }
 
-<script src="/socket.io/socket.io.js"></script>
-<script src="/public/index.js"></script>
-```
-
-> > Para que me reconozca el directorio donde se encuentra el index, debemos poner lo siguiente en app.js:
-
-```
-app.use('/public', express.static('src/public'))
-```
-
-> > En el index.js haremos la tabla de los productos, inicializamos socket desde el cliente, y enviaremos al backend el formulario. Para el formulario debemos hacer un fetch cuyo body sea el formData
-
-```
-const socket = io()
-
-/* CONFIGURACION DEL FORMULARIO DE PRODUCTOS */
-
-//Envio del formulario
-let productForm = document.getElementById('productForm')
-const handleSubmit = (evt, form, route) => {
-    evt.preventDefault()
-    let formData = new FormData(form)
-    fetch(route, {
-        method: "POST",
-        body: formData
-    })
+    insertData = async (product) => {
+        await this.db(this.table).insert(product)
+            .then(() => console.log('product inserted'))
+            .catch(err => console.log(err))
+    }
+    getAll = async () => {
+        let data = await this.db.from(this.table).select('*')
+        return (JSON.parse(JSON.stringify(data)))
+    }
 }
 
-productForm.addEventListener('submit', (e) => handleSubmit(e, e.target, '/api/productos'))
 
-//visualización de la tabla
-const renderTable = (productos) => {
-    let contenido = ''
-    if (productos) {
-        contenido =
-        `<table>
-            <tr>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Foto</th>
-            </tr>`
-        productos.map(producto => {
-            contenido += `
-            <tr>
-                <td>${producto.title}</td>
-                <td>${producto.price}</td>
-                <td><img src="/uploads/${producto.thumbnail}" class="foto"/></td>
-            </tr>`
-        })
-        contenido += `</table>`
-    } else {
-        contenido = `<h2> No hay productos por mostrar </h2>`
+module.exports = Contenedor
+```
+
+> > En app.js usaremos multer para recibir por POST en la ruta /uploads los datos del formulario que enviamos desde la ruta /api/productos que renderiza el dashboard.handlebars. Cuando recibimos dichos datos, utilizamos la clase Contenedor para insertar los datos en la base de datos.
+
+```
+const contenedor = new Contenedor(configMySQL, "products")
+
+/* MULTER */
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'src/database/uploads')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname)
     }
-    return contenido
-} 
-socket.on('products', data => {
-    
-    document.getElementById('table').innerHTML = renderTable(data)
 })
+app.use(multer({ storage }).single('thumbnail'))
 
-```
-
-> > En app.js ahora quitaremos el product.html y lo redirigiremos directamente al /api/productos. Además estableceremos la conexión socket con el cliente
-
-```
-app.get('/',  (req, res) => {
-    res.redirect('/api/productos')
-})
-
-/* WEBSOCKET */
-
-io.on('connection', async socket => {
-    console.log('Socket connected!')
-    let productos;
-    await contenedor.getAll().then(result => productos = result)
-    socket.emit('products', productos)
-})
-```
-
-> > Finalmente modificamos las rutas /api/productos de los métodos GET y POST dentro de productRouter
-
-```
-router.get('/', async (req, res) => {
-    res.render('dashboard')
-})
-
-router.post('/', noEmptyFields, async (req, res) => {
+app.post('/upload', async (req, res) => {
     let producto = req.body
     producto.thumbnail = req.file.filename
-    await contenedor.save(producto).then(result =>  result)
+    await contenedor.insertData(producto)
+    .then(result => res.status(200).send(result))
+    .catch(err => res.send({error: 0, descripcion: err})) 
 })
 ```
 
-> 2) Solución: Websocket en el chat
-
-
-> > Creamos nuestro div de centro de mensajes en el dashboard.handlebars
+> >  Luego, desde el index.js (lado del cliente) enviamos por websocket el nombre "product" al servidor para que éste se encargue de actualizar la tabla de productos. 
 
 ```
-<div id="messageContainer">
-    <h1>Centro de Mensajes</h1>
-    <form id="formMessages">
-         <input type="email" placeholder="tuemail@tuemail.com" name="email" id="email" required/>
-         <p id="history"></p>
-         <input id="chatBox" required/>
-         <input id="sendMessage" type="submit" value="Enviar"/>
-    </form>
-</div>
+const handleSubmit = (evt, form) => {
+    evt.preventDefault()
+    let formData = new FormData(form)
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+        })
+        .then(response => {
+            console.log(response)
+        })
+        .then(data => {
+            // Emitir evento de socket para notificar al cliente que el archivo se ha cargado correctamente
+            socket.emit('product', data)
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error)
+        })
+    productForm.reset()
+}
 ```
 
-> > Permitiremos que el usuario pueda enviar su mensaje al ingresar su email y apretando en el botón Enviar o simplemente haciendo enter. Para ello modificamos el index:
+> > Desde app.js, nos encargamos de obtener todos los productos de la tabla y reenviarla al cliente
 
 ```
-/* CENTRO DE MENSAJES */
+console.log('Socket connected!')
+    let productos;
+    await contenedor.createTable()
+    productos = await contenedor.getAll()
+    io.emit('products', productos)
+    socket.on('product', async data => {
+        productos = await contenedor.getAll()
+        io.emit('products', productos)
+    }) 
+     socket.emit('products', productos) //para que el que se conecte, le lleguen todos los productos
+```
 
-let sendMessage = document.getElementById('sendMessage')
-let email = document.getElementById('email')
-let chatBox = document.getElementById('chatBox')
-let history = document.getElementById('history')
-const fecha = new Date()
+> > Luego para el chat el proceso es similar. Creamos el archivo db.sqlite dentro de ecommerce que está en database. Creamos la configuración en src/options/db.config:
 
+```
+const configSqlite = {
+    client: 'sqlite3',
+    connection: {
+        filename: './src/database/ecommerce/db.sqlite'
+    },
+    useNullAsDefault: true
+}
+```
 
-//Envio del mensaje
+> > Creamos la clase Mensajes dentro de model
 
-sendMessage.addEventListener('click', (e) => {
-    e.preventDefault()
-    if (chatBox.value.trim().length > 0 && email.value) { //el trim quita los espacios en blanco
-        socket.emit('message', {
-            email: email.value,
-            message: chatBox.value.trim(),
-            date: fecha.toLocaleString()
-        }) //enviamos al app.js el {user, message}
-        chatBox.value = ""
+```
+const knex = require('knex')
+
+class Mensajes {
+    constructor(config, table) {
+        this.db = knex(config)
+        this.table = table
+
     }
-})
-
-chatBox.addEventListener('keyup', e => {
-    if (email) {
-        if (e.key === "Enter") {
-            if (chatBox.value.trim().length > 0) { //el trim quita los espacios en blanco
-                socket.emit('message', {
-                    email,
-                    message: chatBox.value.trim(),
-                    date: date
-                }) //enviamos al app.js el {user, message}
-                chatBox.value = ""
-            }
-        }
+    createTable = async () => {
+        await this.db.schema.createTable(this.table, table => {
+                table.increments('id');
+                table.string('email');
+                table.string('message');
+                table.string('date');
+            })
+            .then(console.log('Table created!'))
+            .catch(err => console.log('Ya existe la tabla'))
     }
 
-})
+    insertData = async (chat) => {
+        await this.db(this.table).insert(chat)
+            .then(() => console.log('chat inserted'))
+            .catch(err => console.log(err))
+    }
+    getAll = async () => {
+        let data = await this.db.from(this.table).select('*')
+        return (JSON.parse(JSON.stringify(data)))
+    }
+}
+
+
+module.exports = Mensajes
 
 ```
-> > Desde el backend en app.js creamos dos funciones: una para escribir en un archivo el historial de mensajes, y otro para leerlo. En primer lugar lo leemos y lo guardamos en la variable history. Traemos del front el mensaje del usuario, la agregamos al historial y la emitimos de vuelta con el io.emit. Además debemos enviar el historial a los usuarios que recién se conectan con un socket.emit
+
+> > Solamente necesitaremos modificar el app.js para recibir los chats del lado del cliente
 
 ```
-io.on('connection', async socket => {
-
-    /* PRODUCTOS */
-    ...
-
-
-    /* MENSAJES */
-    history = readHistoryOfMessages()
-    socket.on('message', data => { //recibimos del index.js el {email, message}
-        history.push(data)
+const mensajes = new Mensajes(configSqlite, 'mensajes')
+...
+//WEBSOCKET
+await mensajes.createTable()
+    let history = await mensajes.getAll()
+    socket.on('message', async data => { //recibimos del index.js el {email, message}
+        await mensajes.insertData(data)
+        history = await mensajes.getAll()
         io.emit('history', history) //enviamos a index.js el log a todos los usuarios
-        writeHistoryOfMessages(history)
     })
     socket.emit('history', history) //Para que el que se conecte, le lleguen todos los chats
-})
-
-/* Agregamos el historial de chat a un archivo messages.txt */
-
-const writeHistoryOfMessages = (messages) => {
-    console.log(messages)
-    messages = JSON.stringify((messages), null, 2)
-    try {
-        fs.writeFileSync("./src/database/messages.txt", messages)
-        console.log({
-            message: "se añadio con exito",
-            messages
-        })
-    } catch (err) {
-        console.log('Error en la escritura', err)
-    }
-}
-
-const readHistoryOfMessages = () => {
-    try {
-        let data = fs.readFileSync("./src/database/messages.txt", 'utf8');
-        history = data.length > 0 ? JSON.parse(data) : [];
-    } catch (err) {
-        console.log('Error en la lectura del archivo', err)
-    }
-    return history
-}
-
 ```

@@ -4,21 +4,33 @@ const socket = io()
 
 //Envio del formulario
 let productForm = document.getElementById('productForm')
-const handleSubmit = (evt, form, route) => {
+const handleSubmit = (evt, form) => {
     evt.preventDefault()
     let formData = new FormData(form)
-    fetch(route, {
-        method: "POST",
+    fetch('/upload', {
+        method: 'POST',
         body: formData
-    })
+        })
+        .then(response => {
+            console.log(response)
+        })
+        .then(data => {
+            // Emitir evento de socket para notificar al cliente que el archivo se ha cargado correctamente
+            socket.emit('product', data)
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error)
+        })
+    productForm.reset()
 }
 
-productForm.addEventListener('submit', (e) => handleSubmit(e, e.target, '/api/productos'))
+
+productForm.addEventListener('submit', (e) => handleSubmit(e, e.target))
 
 //visualización de la tabla
 const renderTable = (productos) => {
     let contenido = ''
-    if (productos) {
+    if (productos.length > 0) {
         contenido =
             `<table>
             <tr>
@@ -41,7 +53,6 @@ const renderTable = (productos) => {
     return contenido
 }
 socket.on('products', data => {
-
     document.getElementById('table').innerHTML = renderTable(data)
 })
 

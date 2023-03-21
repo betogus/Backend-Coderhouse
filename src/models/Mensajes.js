@@ -1,6 +1,6 @@
 const knex = require('knex')
 
-class Contenedor {
+class Mensajes {
     constructor(config, table) {
         this.db = knex(config)
         this.table = table
@@ -9,17 +9,17 @@ class Contenedor {
     createTable = async () => {
         await this.db.schema.createTable(this.table, table => {
                 table.increments('id');
-                table.string('title');
-                table.decimal('price');
-                table.string('thumbnail');
+                table.string('email');
+                table.string('message');
+                table.string('date');
             })
             .then(console.log('Table created!'))
             .catch(err => console.log('Ya existe la tabla'))
     }
 
-    insertData = async (product) => {
-        await this.db(this.table).insert(product)
-            .then(() => console.log('product inserted'))
+    insertData = async (chat) => {
+        await this.db(this.table).insert(chat)
+            .then(() => console.log('chat inserted'))
             .catch(err => console.log(err))
     }
     getAll = async () => {
@@ -29,4 +29,4 @@ class Contenedor {
 }
 
 
-module.exports = Contenedor
+module.exports = Mensajes

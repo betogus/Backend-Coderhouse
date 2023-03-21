@@ -1,17 +1,17 @@
 /* IMPORTACIONES */
 
 const express = require('express')
-const productRouter = require('./src/routes/productRouter.js')
 const handlebars = require('express-handlebars')
-const {
-    Server
-} = require('socket.io')
-const fs = require('fs')
+const { Server } = require('socket.io')
 const Contenedor = require('./src/models/Contenedor.js')
-const ruta = 'src/database/archivo.json'
+const {configMySQL, configSqlite} = require('./src/options/db.config.js')
+const multer = require('multer')
+const Mensajes = require('./src/models/Mensajes.js')
 
-/* MANEJO DE PRODUCTOS */
-const contenedor = new Contenedor(ruta)
+/* CONFIGURACIONES DE LA BASE DE DATOS */
+
+const contenedor = new Contenedor(configMySQL, "products")
+const mensajes = new Mensajes(configSqlite, 'mensajes')
 
 /* CONFIGURACION */
 const app = express()
@@ -19,81 +19,82 @@ const PORT = process.env.port || 8080
 const server = app.listen(PORT, () => console.log('Server Up!'))
 const io = new Server(server)
 app.use(express.json())
+app.use(express.urlencoded({extended:true}))
 app.use('/public', express.static('src/public'))
 app.use('/uploads', express.static('src/database/uploads'))
 
+/* MULTER */
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'src/database/uploads')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+})
+app.use(multer({ storage }).single('thumbnail'))
 
 /* MOTORES DE PLANTILLAS */
 
 //Handlebars
 
-app.engine('handlebars', handlebars.engine()) //establecemos la configuracion de handlebars
-app.set('views', './src/public/views/handlebars') //establecemos el directorio donde se encuentran los archivos de plantilla
-app.set('view engine', 'handlebars') //establecemos el motor de plantilla que se utiliza
+app.engine('handlebars', handlebars.engine()) 
+app.set('views', './src/public/views/handlebars') 
+app.set('view engine', 'handlebars') 
 
-//Pug
 
-//app.set('view engine', 'pug')
-//app.set('views', './src/public/views/pug')
-
-//Ejs
-
-//app.set('view engine', 'ejs')
-//app.set('views', './src/public/views/ejs')
 
 /* RUTAS */
-app.use('/api/productos', productRouter)
-
+app.get('/api/productos', async (req, res) => {
+    await contenedor.getAll()
+    res.render('dashboard')
+})
 
 app.get('/', (req, res) => {
     res.redirect('/api/productos')
 })
 
+app.post('/upload', async (req, res) => {
+    let producto = req.body
+    producto.thumbnail = req.file.filename
+    await contenedor.insertData(producto)
+    .then(result => res.status(200).send(result))
+    .catch(err => res.send({error: 0, descripcion: err})) 
+})
+
+//Rutas inexistentes
+app.use((req, res) => {
+res.status(404).send({error: -2, descripcion: `ruta
+${req.baseUrl}${req.url} método ${req.method} no implementada`});
+});
+
 /* WEBSOCKET */
 
-let history = [] //Aqui almacenamos los {user, message} de todos los usuarios
-
 io.on('connection', async socket => {
-
-    /* PRODUCTOS */
     console.log('Socket connected!')
-    let productos;
-    await contenedor.getAll().then(result => productos = result)
-    socket.emit('products', productos)
+    
+    /* PRODUCTOS */
+    await contenedor.createTable()
+    let productos = await contenedor.getAll()
+    io.emit('products', productos)
+    socket.on('product', async data => {
+        productos = await contenedor.getAll()
+        io.emit('products', productos)
+    }) 
+     socket.emit('products', productos) //para que el que se conecte, le lleguen todos los productos
+    
+   
 
 
     /* MENSAJES */
-    history = readHistoryOfMessages()
-    socket.on('message', data => { //recibimos del index.js el {email, message}
-        history.push(data)
+    await mensajes.createTable()
+    let history = await mensajes.getAll()
+    socket.on('message', async data => { //recibimos del index.js el {email, message}
+        await mensajes.insertData(data)
+        history = await mensajes.getAll()
         io.emit('history', history) //enviamos a index.js el log a todos los usuarios
-        writeHistoryOfMessages(history)
     })
-    socket.emit('history', history) //Para que el que se conecte, le lleguen todos los chats
+    socket.emit('history', history) //Para que el que se conecte, le lleguen todos los chats 
 })
 
-/* Agregamos el historial de chat a un archivo messages.txt */
-
-const writeHistoryOfMessages = (messages) => {
-    console.log(messages)
-    messages = JSON.stringify((messages), null, 2)
-    try {
-        fs.writeFileSync("./src/database/messages.txt", messages)
-        console.log({
-            message: "se añadio con exito",
-            messages
-        })
-    } catch (err) {
-        console.log('Error en la escritura', err)
-    }
-}
-
-const readHistoryOfMessages = () => {
-    try {
-        let data = fs.readFileSync("./src/database/messages.txt", 'utf8');
-        history = data.length > 0 ? JSON.parse(data) : [];
-    } catch (err) {
-        console.log('Error en la lectura del archivo', err)
-    }
-    return history
-}
