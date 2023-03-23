@@ -1,6 +1,6 @@
-const knex = require('knex')
+import knex from 'knex'
 
-class Mensajes {
+export default class Mensajes {
     constructor(config, table) {
         this.db = knex(config)
         this.table = table
@@ -27,6 +27,3 @@ class Mensajes {
         return (JSON.parse(JSON.stringify(data)))
     }
 }
-
-
-module.exports = Mensajes

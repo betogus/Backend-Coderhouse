@@ -1,14 +1,18 @@
-const configMySQL = {
+import dotenv from 'dotenv'
+dotenv.config()
+
+export const configMySQL = {
     client: 'mysql',
     connection: {
         host: '127.0.0.1',
         user: 'root',
         password: 'password',
-        database: 'pruebamysql'
+        database: 'desafio10'
     }
 }
 
-const configSqlite = {
+
+export const configSqlite = {
     client: 'sqlite3',
     connection: {
         filename: './src/database/ecommerce/db.sqlite'
@@ -16,6 +20,24 @@ const configSqlite = {
     useNullAsDefault: true
 }
 
+export const configMongo = {
+    url: process.env.MONGO_URL || 'mongodb://localhost:27017/backend'
+}
+
+import admin from "firebase-admin";
+import fs from 'fs'
+
+const serviceAccount = JSON.parse(fs.readFileSync('./src/options/credentials.json', 'utf-8'))
+
+export const configFirebase = {
+    db: admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: "https://desafio10-cd04e-default-rtdb.firebaseio.com"
+    })
+}
 
 
-module.exports = {configMySQL, configSqlite}
+export const app = {
+    persistence: process.env.PERSISTENCE
+}
+
