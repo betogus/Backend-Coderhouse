@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    <div id="formContainer">
+        <div id="title">
+            <h1>Registro</h1>
+        </div>
+        <form action="/auth/register" method="POST" id="registerForm" role="form">
+            <input type="text" name="username" id="username" placeholder="username" required>
+            <input type="password" name="password" id="password" placeholder="password" required>
+            <input type="email" name="email" id="email" placeholder="email" required>
+            <input type="submit" value="Registrarse" id="submit">
+        </form>
+        <div id="or">
+            <p>¿Ya tienes una cuenta?</p>
+        </div>
+        <div id="loginBtn" onclick="location.href = '/auth/login'">Loguearse</div>
+    </div>
+
+    <style>
+        #loginBtn,
+        #submit {
+            background-color: rgb(101, 65, 245);
+            padding: 0px 10px;
+            width: 300px;
+            height: 30px;
+            border-radius: 0.5rem;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        #or {
+            width: 300px;
+            display: flex;
+            justify-content: center;
+            font-size: larger;
+            color: #656565;
+            font-style: italic;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(26,26,47);
+        }
+
+        #title {
+            color: #fff;
+        }
+
+        #formContainer {
+            background-color: rgb(32, 32, 60);
+            border-radius: 2rem;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+
+        #registerForm {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        ::placeholder {
+            background-color: rgb(40, 40, 71);
+        }
+
+        input {
+            border: 0;
+            padding-left: 10px;
+            width: 300px;
+            height: 30px;
+            border-radius: 0.5rem;
+            margin: 5px;
+            background-color: rgb(40, 40, 71);
+        }
+    </style>
+</body>
+</html>

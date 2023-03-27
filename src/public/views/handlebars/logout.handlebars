@@ -1,0 +1,26 @@
+<div id="title">
+    <h1>Hasta pronto {{username}}</h1>
+</div>
+
+<style>
+    #title {
+        margin-top: 100px;
+        background-color: rgb(32, 32, 60);
+        border-radius: 2rem;
+        width: 600px;
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1 {
+        color: #ffffff;
+    }
+</style>
+<script>
+    setTimeout(() => {
+        window.location.href = '/auth/clearCookies'
+    }, 2000)
+
+</script>

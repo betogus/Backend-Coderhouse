@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Error</title>
+</head>
+
+<body>
+    <div id="container">
+        <div id="title">
+            <h1>Login Error</h1>
+        </div>
+        <h2>Usuario y/o contraseña incorrectos</h2>
+        <div id="loginBtn" onclick="location.href = '/auth/login'">Loguearse</div>
+    </div>
+    <style>
+        #loginBtn {
+            background-color: rgb(101, 65, 245);
+            padding: 0px 10px;
+            width: 300px;
+            height: 30px;
+            border-radius: 0.5rem;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(26,26,47);
+        }
+
+        #title, h2 {
+            color: #fff;
+        }
+
+        #container {
+            background-color: rgb(32, 32, 60);
+            border-radius: 2rem;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+    </style>
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+
+<body>
+    <div id="formContainer">
+        <div id="title">
+            <h1>Login</h1>
+        </div>
+        <form action="/auth/login" method="POST" id="loginForm" role="form">
+            <input type="text" id="username" name="username" placeholder="username" required>
+            <input type="password" id="password" name="password" placeholder="password" required>
+            <input type="submit" value="Loguear" id="submit">
+        </form>
+        <div id="or">
+            <p>¿No tienes una cuenta?</p>
+        </div>
+        <div id="registerBtn" onclick="location.href = '/auth/register'">Registrarse</div>
+
+    </div>
+    <style>
+        #registerBtn, #submit {
+            background-color: rgb(101,65,245);
+            padding: 0px 10px;
+            width: 300px;
+            height: 30px;
+            border-radius: 0.5rem;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        #or {
+            width: 300px;
+            display: flex;
+            justify-content: center;
+            font-size: larger;
+            color: #656565;
+            font-style: italic;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(26,26,47);
+        }
+        #title {
+            color: #fff;
+        }
+        #formContainer {
+            background-color: rgb(32, 32, 60);
+            border-radius: 2rem;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+        #loginForm {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        ::placeholder {
+            background-color: rgb(40, 40, 71);
+        }
+        input {
+            border: 0;
+            padding-left: 10px;
+            width: 300px;
+            height: 30px;
+            border-radius: 0.5rem;
+            margin: 5px;
+            background-color: rgb(40, 40, 71);
+        }
+    </style>
+</body>
+
+</html>
