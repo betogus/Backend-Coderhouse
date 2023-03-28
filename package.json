@@ -30,6 +30,7 @@
     "passport-local": "^1.0.0",
     "pug": "^3.0.2",
     "socket.io": "^4.6.1",
-    "sqlite3": "^5.1.5"
+    "sqlite3": "^5.1.5",
+    "yargs": "^17.7.1"
   }
 }
