@@ -7,6 +7,10 @@ import authRouter from './routes/authRouter.js'
 import handlebars from 'express-handlebars'
 import session from "express-session";
 import cookieParser from "cookie-parser";
+import { initializePassport } from './options/strategies/passport.config.js'
+import MongoStore from 'connect-mongo'
+import passport from 'passport'
+import googleStrategy from './options/strategies/google.js'
 
 /* CONFIGURACION */
 const app = express()
@@ -24,12 +28,18 @@ app.set('view engine', 'handlebars')
 app.use(cookieParser())
 
 app.use(session({
-    key: 'user_sid', //sid = session id
+    store: MongoStore.create({mongoUrl: 'mongodb://localhost:27017/backendSession'}),
     secret: 'c0d3r',
     resave: true,
     cookie: {maxAge: 60000},
     saveUninitialized: true
 }))
+
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
+
+passport.use(googleStrategy)
 /* MULTER */
 
 const storage = multer.diskStorage({
@@ -46,3 +56,7 @@ app.use(multer({ storage }).single('thumbnail'))
 /* RUTAS */
 app.use('/products', productRouter)
 app.use('/auth', authRouter)
+
+app.get('/', (req, res) => {
+    res.redirect('/products')
+})

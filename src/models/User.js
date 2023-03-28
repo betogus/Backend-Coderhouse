@@ -19,8 +19,24 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+    first_name: {
+        type: String,
+        required: true,
+    },
+    last_name: {
+        type: String,
+        required: true
+    },
+    age: {
+        type: Number,
+        required: true
+    },
+    address: {
+        type: String,
+        required: true
     }
 })
 
-export const UserModel = mongoose.model('user', userSchema)
+export const users = mongoose.model('user', userSchema)
 

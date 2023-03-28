@@ -1,15 +1,17 @@
 import { Router } from "express";
-import { isAuth } from "../middlewares/middlewares.js";
 import ProductService from "../services/ProductService.js";
 
 const router = Router()
 const productManager = new ProductService()
 
-router.get('/', isAuth, async (req, res) => {
-    let products = await productManager.getProducts()
-    let user = req.cookies?.user || req.session?.user
-    res.render('dashboard', {user, products} )
-
+router.get('/', async (req, res) => {
+    if (req.isAuthenticated()) {
+        let products = await productManager.getProducts()
+        let user = req.cookies?.user || req.session?.user
+        res.render('dashboard', {user, products} )
+    } else {
+        res.redirect('/auth/login')
+    }
 }) 
 
 router.post('/', async (req, res) => {
