@@ -1,25 +1,33 @@
-const yargs = require('yargs')
+const yargs = require('yargs');
+let PORT;
+let MODO;
+const argv = yargs
+    .option('port', {
+        alias: 'p',
+        describe: 'Puerto en el que se iniciará la aplicación',
+        type: 'number',
+        default: 8080
+    })
+    .option('modo', {
+        alias: 'm',
+        describe: 'Modo de inicio de la aplicación',
+        type: 'string',
+        choices: ['fork', 'cluster'],
+        default: 'fork'
+    })
+    .argv;
 
-yargs.command({
-    command: 'port',
-    describe: "Definimos el puerto de escucha del servidor (Por defecto será el 8080)",
-    builder: {
-        port: {
-            describe: "Puerto de escucha del servidor",
-            demandOption: false,
-            type: "number",
-        },
-    },
-    handler: function (argv) {
-        const port = argv.port;
-        if (!Number.isInteger(port)) {
-            console.log({
-                error: "El puerto debe ser un número entero.",
-            });
-            process.exit(-5);
-        }
-        return port;
-    },
-})
+if (argv.modo === 'cluster') {
+    console.log('Iniciando en modo cluster...');
+    MODO = "cluster"
+} else {
+    console.log('Iniciando en modo fork...')
+    MODO = 'fork'
+}
 
-module.exports = yargs
+PORT = argv.port
+console.log(`Puerto: ${argv.port}`);
+
+yargs.parse()
+
+module.exports = {PORT, MODO}
