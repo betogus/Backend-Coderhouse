@@ -13,13 +13,16 @@ import passport from 'passport'
 import googleStrategy from './options/strategies/google.js'
 import yargs from './yargs.cjs'
 import apiRouter from './routes/apiRouther.js'
+import compression from 'compression'
+import { logger } from './winston/config.js'
 
 /* CONFIGURACION */
 const app = express()
 const args = yargs.parse();
-const port = args.port || 8080;
+const port = args.port || 8081;
 const server = app.listen(port, () => console.log('Server Up at port ', port))
 const io = new Server(server)
+app.use(compression())
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use('/public', express.static('src/public'))
@@ -66,6 +69,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
+    logger.info(`Método ${req.method} ruta ${req.path}`)
     let info = {
         argumentosDeEntrada: process.argv[3]?.slice(8) || "nulo",
         plataforma: process.platform,
@@ -75,7 +79,13 @@ app.get('/info', (req, res) => {
         processId: process.pid,
         carpetaDelProyecto: process.cwd()
     }
-    res.render('info', {
-        info
-    })
+    res.render('info', { info })
 })
+
+//RUTAS NO DEFINIDAS
+
+app.use((req, res, next) => {
+    logger.warn(`Ruta no encontrada: ${req.originalUrl}`);
+    res.status(404).send("Ruta no encontrada");
+
+});
