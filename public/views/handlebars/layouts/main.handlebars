@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <title>Desafio 3</title>
+</head>
+<body>
+    <nav class="header-nav">
+        <ul class="header-nav-container">
+            <li class="header-nav-item"><a href="/dashboard">Inicio</a></li>
+            <li class="header-nav-item"><a href="/user">Mis datos</a></li>
+            <li class="header-nav-item"><a href="/cart">Carrito</a></li>
+            <li class="header-nav-item"><a href='/auth/logout'>Desloguearse</a></li>
+        </ul>
+    </nav>
+    {{{body}}}
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgb(26, 26, 47);
+            height: 100vh;
+        }
+        .header-nav {
+            background-color: #1f1e1e;
+            width: 80%;
+            height: 50px;
+            position: absolute;
+        }
+        .header-nav-container {
+            
+            display: flex;
+            justify-content: space-around;
+            
+        }
+        .header-nav-item {
+            list-style: none;
+            display: inline;
+        }
+
+    </style>
+</body>
+
+</html>

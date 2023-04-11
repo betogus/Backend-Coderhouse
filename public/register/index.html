@@ -11,7 +11,7 @@
         <div id="title">
             <h1>Registro</h1>
         </div>
-        <form action="/auth/register" method="POST" id="registerForm" role="form">
+        <form id="registerForm" role="form" method="POST" action="/auth/register" enctype="multipart/form-data">
             <input type="text" name="username" id="username" placeholder="username" required>
             <input type="password" name="password" id="password" placeholder="password" required>
             <input type="email" name="email" id="email" placeholder="email" required>
@@ -19,6 +19,11 @@
             <input type="text" name="last_name" id="last_name" placeholder="last_name" required>
             <input type="text" name="address" id="address" placeholder="address" required>
             <input type="number" name="age" id="age" placeholder="age" required>
+            <div style="display: inline;">
+                <a style="color: white;">+54 351</a>
+                <input type="number" name="phone" id="phone" placeholder="*******" required>
+            </div>
+            <input type="file" name="photo" id="photo" required>
             <input type="submit" value="Registrarse" id="submit">
         </form>
         <div id="or">
@@ -26,7 +31,7 @@
         </div>
         <div id="loginBtn" onclick="location.href = '/auth/login'">Loguearse</div>
     </div>
-
+    
     <style>
         #loginBtn,
         #submit {
@@ -92,6 +97,10 @@
             border-radius: 0.5rem;
             margin: 5px;
             background-color: rgb(40, 40, 71);
+        }
+        input#phone {
+            display: inline-block;
+            width: 200px;
         }
     </style>
 </body>

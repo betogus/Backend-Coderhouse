@@ -15,6 +15,8 @@ import { PORT, MODO } from './yargs.cjs'
 import apiRouter from './routes/apiRouther.js'
 import os from 'os'
 import cluster from 'cluster'
+import userRouter from './routes/userRouter.js'
+import cartRouter from './routes/cartRouter.js'
 /* CONFIGURACION */
 const app = express()
 const NUM_CPUS = os.cpus().length
@@ -34,13 +36,24 @@ if (MODO === "cluster" && cluster.isPrimary) {
 
     app.use(express.json())
     app.use(express.urlencoded({extended:true}))
-    app.use('/public', express.static('src/public'))
-    app.use('/uploads', express.static('src/database/uploads'))
+    app.use(express.static('public'))
+    app.use('/uploads', express.static('./public/database/uploads'))
     app.engine('handlebars', handlebars.engine())
-    app.set('views', './src/public/views/handlebars')
+    app.set('views', './public/views/handlebars')
     app.set('view engine', 'handlebars')
 
     app.use(cookieParser())
+
+    /* MULTER */
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, './public/database/uploads')
+        },
+        filename: function (req, file, cb) {
+            cb(null, Date.now() + '-' + file.originalname)
+        }
+    })
+    app.use(multer({ storage }).single('photo'))
 
     app.use(session({
         store: MongoStore.create({mongoUrl: 'mongodb://localhost:27017/backendSession'}),
@@ -55,26 +68,18 @@ if (MODO === "cluster" && cluster.isPrimary) {
     app.use(passport.session())
 
     passport.use(googleStrategy)
-    /* MULTER */
 
-    const storage = multer.diskStorage({
-        destination: function (req, file, cb) {
-            cb(null, 'src/database/uploads')
-        },
-        filename: function (req, file, cb) {
-            cb(null, Date.now() + '-' + file.originalname)
-        }
-    })
-    app.use(multer({ storage }).single('thumbnail'))
 
 
     /* RUTAS */
-    app.use('/products', productRouter)
+    app.use('/dashboard', productRouter)
     app.use('/auth', authRouter)
     app.use('/api/randoms', apiRouter)
-
+    app.use('/user', userRouter)
+    app.use('/cart', cartRouter)
+    
     app.get('/', (req, res) => {
-        res.redirect('/products')
+        res.redirect('/dashboard')
     })
 
     app.get('/info', (req, res) => {

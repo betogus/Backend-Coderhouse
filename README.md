@@ -1,301 +1,353 @@
-# Desafio 15
+# Desafio 18
 
-## Servidor con balance de carga
+## Tercera entrega del proyecto final
 
-**Consigna:**
-Tomando con base el proyecto que vamos realizando, agregar un parámetro más en
-la ruta de comando que permita ejecutar al servidor en modo fork o cluster. Dicho
-parámetro será 'FORK' en el primer caso y 'CLUSTER' en el segundo, y de no
-pasarlo, el servidor iniciará en modo fork.
-Agregar en la vista info, el número de procesadores presentes en el servidor.
-Ejecutar el servidor (modos FORK y CLUSTER) con nodemon verificando el número de procesos tomados por node.
+**
 
-> > Modificamos el yargs.cjs de tal manera que me defina los parámetros port y modo que le vayamos a pasar por la terminal al levantar la app
+> Base de datos
+
+> > Utilizamos mongoose. Ejecutamos como administrador la base de datos con el cmd
+
 
 ```
-const yargs = require('yargs');
-let PORT;
-let MODO;
-const argv = yargs
-    .option('port', {
-        alias: 'p',
-        describe: 'Puerto en el que se iniciará la aplicación',
-        type: 'number',
-        default: 8080
-    })
-    .option('modo', {
-        alias: 'm',
-        describe: 'Modo de inicio de la aplicación',
-        type: 'string',
-        choices: ['fork', 'cluster'],
-        default: 'fork'
-    })
-    .argv;
-
-if (argv.modo === 'cluster') {
-    console.log('Iniciando en modo cluster...');
-    MODO = "cluster"
-} else {
-    console.log('Iniciando en modo fork...')
-    MODO = 'fork'
-}
-
-PORT = argv.port
-console.log(`Puerto: ${argv.port}`);
-
-yargs.parse()
-
-module.exports = {PORT, MODO}
+mongod --dbpath “C:\Program Files\MongoDB\miBaseDeDatos” 
 ```
 
-> > Modificamos el app.js de tal manera que se creen los workers cuya cantidad dependerá de si especificamos que sea en modo FORK (1 proceso) o modo CLUSTER (tantos procesos como procesadores lógicos haya en el CPU). En cluser.on('exit') significa que si muere un proceso, automáticamente me creará otro. Además, agregamos a la ruta /info, la cantidad de procesadores presentes en la cpu.
+> Agregar los datos del usuario (photo, phone, address, etc.)
+
+> > Modificamos el archivo index.html que se encuentra en el directorio public/register para incluir la dirección, edad, teléfono y foto de perfil al registro (en el formulario debemos recordar agregar el enctype="multipart/form-data" para que me reconozca el file de la foto de perfil). Importamos y configuramos Multer para el manejo de archivos en app.js
 
 ```
-const app = express()
-const NUM_CPUS = os.cpus().length
-let puerto = PORT || 8080;
-if (MODO === "cluster" && cluster.isPrimary) {
-    console.log(`Proceso principal ${process.pid} está corriendo`)
-    for (let i = 0; i < NUM_CPUS; i++) {
-        cluster.fork()
-    }
-    cluster.on('exit', (worker, code, signal) => {
-        console.log(`Proceso ${worker.process.pid} murió`)
-    })
-} else {
-    app.listen(puerto, () => {
-        console.log(`Iniciando servidor en puerto ${puerto}`)
-    })
-    ...
-    ...
-    app.get('/info', (req, res) => {
-        let info = {
-            argumentosDeEntrada: process.argv[3]?.slice(8) || "nulo",
-            plataforma: process.platform,
-            versionNodeJs: process.version,
-            memoriaUsada: process.memoryUsage(),
-            pathDeEjecucion: process.execPath,
-            processId: process.pid,
-            carpetaDelProyecto: process.cwd(),
-            cantidadDeProcesos: os.cpus().length
+/* MULTER */
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, './public/database/uploads')
+        },
+        filename: function (req, file, cb) {
+            cb(null, Date.now() + '-' + file.originalname)
         }
-        res.render('info', {
-            info
-        })
     })
-}
+app.use(multer({ storage }).single('photo'))
 ```
-> > Modificamos el info.handlebars para que tenga en cuenta la cantidad de procesadores
+
+> > Modificamos el "register" del passport.config para que además del username, email y password, reciba los demás datos.
 
 ```
-<div id="container">
-    <div id="title">
-        <h1>INFO</h1>
-        <div>
-            <p>Argumentos de entrada: {{info.argumentosDeEntrada}}</p>
-            <p>Plataforma: {{info.plataforma}}</p>
-            <p>Versión de Node JS: {{info.versionNodeJs}}</p>
-            <p>Memoria Usada:</p>
-            {{#each info.memoriaUsada}}
-            <p class="indent">{{@key}}: {{this}}</p>
-            {{/each}}
-            <p>Path de Ejecución: {{info.pathDeEjecucion}}</p>
-            <p>Id del proceso: {{info.processId}}</p>
-            <p>Carpeta del proyecto: {{info.carpetaDelProyecto}}</p>
-            <p>Cantidad de procesadores: {{info.cantidadDeProcesos}}</p>
+ const newUser = {
+    username,
+    password: createHash(password), 
+    email: req.body.email, 
+    first_name: req.body.first_name, 
+    last_name: req.body.last_name,
+    age: req.body.age,
+    address: req.body.address,
+    phone: req.body.phone,
+    photo: req.file.filename
+}
+```
+
+> > El passport.config utiliza el modelo User para almacenar los datos en la base de datos, por lo que debemos incluir en la plantilla de éste la direccion, telefono, edad y foto.
+
+```
+import mongoose from "mongoose"
+
+mongoose.connect('mongodb://localhost:27017/backend', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+
+const userSchema = mongoose.Schema({
+    username: { type: String, unique: true, required: true },
+    email: { type: String, unique: true, required: true },
+    password: { type: String, required: true },
+    first_name: { type: String, required: true },
+    last_name: { type: String, required: true },
+    age: { type: Number, required: true },
+    address: { type: String, required: true },
+    photo: { type: String, required: true },
+    phone: { type: Number, required: true }
+})
+
+export const users = mongoose.model('user', userSchema)
+
+```
+
+> > Generamos una barra de navegación. Agregamos en el main.handlebars lo siguiente:
+
+```
+<body>
+    <nav class="header-nav">
+        <ul class="header-nav-container">
+            <li class="header-nav-item"><a href="/dashboard">Inicio</a></li>
+            <li class="header-nav-item"><a href="/user">Mis datos</a></li>
+            <li class="header-nav-item"><a href="/cart">Carrito</a></li>
+            <li class="header-nav-item"><a href='/auth/logout'>Desloguearse</a></li>
+        </ul>
+    </nav>
+    {{{body}}}
+```
+
+
+> > Creamos un userRouter el cual lo importamos al app.js. En la ruta /user tenemos que tener en cuenta que si nos logueamos con google, los datos no se almacenan en la base de datos, y sólo las podemos guardar en la session. Por lo tanto, tendremos lo siguiente en el userRouter
+
+```
+import { Router } from "express"
+import { isAuth } from "../middlewares/middlewares.js"
+import { users } from "../models/User.js"
+const router = Router()
+
+router.get('/', async (req, res) => {
+    if (req.isAuthenticated()) {
+        try {
+            const userId = req.session.passport.user;
+            const user = await users.findById(userId);
+            res.render('user', {
+                username: user.username,
+                email: user.email,
+                photo: user.photo,
+                address: user.address,
+                age: user.age,
+                phone: user.phone
+            });
+        } catch (err) {
+            const user = req.session.user
+            console.log(user)
+            res.render('user', {
+                username: user.username,
+                email: user.email,
+                photo: user.photo && user.photo,
+                photoURL: user.photoURL && user.photoURL,
+                address: user.address && user.address,
+                age: user.age && user.age,
+                phone: user.phone && user.phone
+            })
+        }
+    } else {
+        res.redirect('/auth/login')
+    }
+    
+})
+
+export default router
+```
+
+> > Importamos el userRouter en la app.js
+
+```
+app.use('/user', userRouter)
+```
+
+> > creamos el user.handlebars
+
+```
+<div class="user-container">
+    <h1 id="title">{{username}}</h1>
+
+    <div>
+        <div class="img-container">
+            {{#if photo}}
+            <img src="/database/uploads/{{photo}}" />
+            {{else if photoURL}}
+            <img src="{{photoURL}}">
+            {{else}}
+            <img src="/predeterminado/avatar.jpg"/>
+            {{/if}}
         </div>
+        <p>Email: {{email}}</p>
+        <p>Dirección: {{address}}</p>
+        <p>Edad: {{age}}</p>
+        <p>teléfono: {{#if phone}} +54 351{{phone}} {{else}} No hay datos {{/if}}</p>
+
     </div>
 </div>
 ```
-> > Ejecutamos la base de datos de mongo desde el cmd:
+
+> Nodemailer
+
+> > Instalamos nodemailer con npm i nodemailer. Creamos un middleware para el envío del mail, y guardamos en el archivo .env el TEST_MAIL y el TEST_PASS que obtenemos de la siguiente URL https://security.google.com/settings/security/apppasswords al seleccionar "otra" en donde dice "seleccionar aplicación". El middleware es el siguiente:
 
 ```
-mongod --dbpath “C:\Program Files\MongoDB\miBaseDeDatos”
-```
+import { createTransport } from "nodemailer";
+import dotenv from 'dotenv'
 
-> > Probamos de correr la app en modo fork
-
-```
-node src/app.js --port=8080
-```
-
-> > En el cmd veremos el pid del procesador con el comando tasklist /fi "imagename eq node.exe"
-
-```
-Nombre de imagen               PID Nombre de sesión Núm. de ses Uso de memor
-========================= ======== ================ =========== ============
-node.exe                     12992 Console                    5    78.836 KB
-```
-
-> > Cortamos la ejecución y ahora probamos en modo cluster
-
-```
-node src/app.js --port=8080 --modo=cluster
-```
-
-> > Vamos al cmd y ejecutamos el comando tasklist /fi "imagename eq node.exe"
-
-```
-Nombre de imagen               PID Nombre de sesión Núm. de ses Uso de memor
-========================= ======== ================ =========== ============
-node.exe                      8436 Console                    5    56.196 KB
-node.exe                      4564 Console                    5    56.076 KB
-node.exe                      9172 Console                    5    56.424 KB
-node.exe                     11468 Console                    5    56.760 KB
-node.exe                       916 Console                    5    56.276 KB
-node.exe                     11348 Console                    5    56.348 KB
-node.exe                     10408 Console                    5    56.856 KB
-node.exe                     12064 Console                    5    56.740 KB
-node.exe                      9544 Console                    5    56.160 KB
-```
-
-> > Ejecutar la app con pm2 en modo fork y cluster
-
-```
-Modo fork:
-pm2 start src/app.js
-┌─────┬────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
-│ id  │ name   │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
-├─────┼────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 0   │ app    │ default     │ 1.0.0   │ fork    │ 9540     │ 3s     │ 0    │ online    │ 0%       │ 48.0mb   │ Usuario  │ disabled │
-└─────┴────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
-Matamos el proceso con pm2 delete all 
-
-Modo cluster:
-pm2 start -i max src/app.js
-┌─────┬────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
-│ id  │ name   │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
-├─────┼────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 0   │ app    │ default     │ 1.0.0   │ cluster │ 3764     │ 3s     │ 0    │ online    │ 0%       │ 31.9mb   │ Usuario  │ disabled │
-│ 1   │ app    │ default     │ 1.0.0   │ cluster │ 7976     │ 3s     │ 0    │ online    │ 0%       │ 31.0mb   │ Usuario  │ disabled │
-│ 2   │ app    │ default     │ 1.0.0   │ cluster │ 7076     │ 3s     │ 0    │ online    │ 0%       │ 31.4mb   │ Usuario  │ disabled │
-│ 3   │ app    │ default     │ 1.0.0   │ cluster │ 6804     │ 2s     │ 0    │ online    │ 0%       │ 31.2mb   │ Usuario  │ disabled │
-│ 4   │ app    │ default     │ 1.0.0   │ cluster │ 5976     │ 2s     │ 0    │ online    │ 0%       │ 31.2mb   │ Usuario  │ disabled │
-│ 5   │ app    │ default     │ 1.0.0   │ cluster │ 3308     │ 2s     │ 0    │ online    │ 0%       │ 30.7mb   │ Usuario  │ disabled │
-│ 6   │ app    │ default     │ 1.0.0   │ cluster │ 9624     │ 2s     │ 0    │ online    │ 0%       │ 28.6mb   │ Usuario  │ disabled │
-│ 7   │ app    │ default     │ 1.0.0   │ cluster │ 22620    │ 1s     │ 0    │ online    │ 0%       │ 30.6mb   │ Usuario  │ disabled │
-└─────┴────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
-```
-
-**Consigna:**
-Configurar Nginx para balancear cargas de nuestro servidor de la siguiente manera:
-Redirigir todas las consultas a /api/randoms a un cluster de servidores escuchando en el puerto 8081. El cluster será creado desde node utilizando el módulo nativo cluster.
-El resto de las consultas, redirigirlas a un servidor individual escuchando en el puerto 8080.
-Verificar que todo funcione correctamente.
-Luego, modificar la configuración para que todas las consultas a /api/randoms sean redirigidas a
-un cluster de servidores gestionado desde nginx, repartiéndolas equitativamente entre 4
-instancias escuchando en los puertos 8082, 8083, 8084 y 8085 respectivamente.
+dotenv.config()
 
 
-> > En el cmd vamos a la ruta donde está el archivo descargado de nginx: cd C:\Users\Usuario\Desktop\Gustavo Dell\GUS\Programacion\CoderHouse\Backend\Clase 30\nginx-1.22.1 y luego le damos a start nginx.exe
+const transporter = createTransport({
+    service: 'gmail',
+    port: 587,
+    auth: {
+        user: process.env.TEST_MAIL,
+        pass: process.env.TEST_PASS //Contraseña del link
+    }
+});
 
-> > Ejecutamos con node como en la consigna anterior, pero utilizando el siguiente código en el archivo nginx.conf (recordar recargar nginx con el comando nginx -s reload y guardar el archivo en la carpeta correspondiente a nginx):
-
-```
-
-worker_processes  1;
-
-events {
-    worker_connections  1024;
-}
-
-
-http {
-    include       mime.types;
-    default_type  application/octet-stream;
-
-    upstream node_app {
-        server localhost:8080;
+export const etherealMail = async (req, res, next) => {
+    let user = req.body
+    console.log(user)
+    const mailOptions = {
+        from: process.env.TEST_MAIL,
+        to: [`${user.email}`],
+        subject: "Su registro fue exitoso",
+        html: `
+        <h1>Se ha registrado con éxito</h1>
+        <p>Sus datos son:</p>
+        <ul>
+            <li>Nombre de usuario: ${user.username}</li>
+            <li>Contraseña: ${user.password}</li>
+        </ul>
+        `
+    }
+    try {
+        const info = await transporter.sendMail(mailOptions)
+        console.log(info)
+        next()
+    } catch (error) {
+        console.log(error)
     }
 
-    upstream api_randoms {
-        server localhost:8081;
-    }
-    
-    sendfile        on;
-    keepalive_timeout  65;
-
-    server {
-        listen       80;
-        server_name  localhost;
-
-        location / {
-            root   "C:\Users\Usuario\Desktop\Gustavo Dell\GUS\Programacion\CoderHouse\Backend\prueba\myproject";
-            index  index.html index.htm;
-            proxy_pass http://node_app;    
-        }
-
-
-        location /api/randoms {
-            index  index.html index.htm;
-            proxy_pass http://api_randoms;
-        }
-
-
-
-        error_page   500 502 503 504  /50x.html;
-        location = /50x.html {
-            root   html;
-        }
-
-    }
-
-}
-
+} 
 ```
 
-> > Redirigimos a un cluster de servidores. Modificamos el archivo nginx.conf con el siguiente código:
+> > En authRouter agregamos el middleware. 
+
+
+> > De manera similar, creamos la ruta /cart en app.js, generamos el cart.handlebars y su cart.js donde traeremos los items del carrito que están almacenados en el localStorage. En app.js realizamos la configuración para utilizar nodemailer y twilio luego de haberlo instalado. Lo importamos y generamos las rutas de tipo GET Y POST de cart. En el POST, recibiremos la lista de los productos del carrito
 
 ```
+<div class="container">
+    <h1 id="titulo">Carrito</h1>
+    <div id="cart-container">
 
-worker_processes  1;
-
-events {
-    worker_connections  1024;
-}
-
-
-http {
-    include       mime.types;
-    default_type  application/octet-stream;
-
-    upstream node_app {
-        server localhost:8080;
-    }
-
-    upstream api_randoms {
-        server localhost:8082;
-        server localhost:8083;
-        server localhost:8084;
-        server localhost:8085;
-    }
-
-    sendfile        on;
-    keepalive_timeout  65;
-
-    server {
-        listen       80;
-        server_name  localhost;
-
-        location / {
-            root   "C:\Users\Usuario\Desktop\Gustavo Dell\GUS\Programacion\CoderHouse\Backend\Clase 8\desafio4";
-            index  index.html index.htm;
-            proxy_pass http://node_app;    
+    </div>
+    <div class="button-container">
+        <button type="button" class="button" id="borrarCarrito">Borrar todo</button>
+        <button type="button" class="button" id="confirmarCompra">Confirmar compra</button>
+    </div>
+</div>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+    /* CARGAMOS LOS PRODUCTOS DEL CARRITO */
+    let productosEnElCarrito = JSON.parse(localStorage.getItem("productos")) || [];
+    let cargarCarrito = () => {
+        if (productosEnElCarrito.length === 0) document.getElementById('cart-container').innerHTML = `<h3>No hay productos en el carrito</h3>`
+        for (let i = 0; i < productosEnElCarrito.length; i++) {
+            document.getElementById('cart-container').innerHTML += `
+    <div class="product-item" id="${productosEnElCarrito[i].id}">
+        <p class="product-name">Nombre: ${productosEnElCarrito[i].name}</p>
+        <p class="product-price">Precio: ${productosEnElCarrito[i].precioKg}</p>
+    </div>`
         }
-
-
-        location /api/randoms {
-            index  index.html index.htm;
-            proxy_pass http://api_randoms;
-        }
-
-
-
-        error_page   500 502 503 504  /50x.html;
-        location = /50x.html {
-            root   html;
-        }
-
     }
+    cargarCarrito()
 
-}
+    /* AGREGAMOS LAS FUNCIONALIDADES DE LOS BOTONES */
+    let borrarCarrito = document.getElementById('borrarCarrito')
+    let confirmarCompra = document.getElementById('confirmarCompra')
+    //Borrar productos del carrito
+    borrarCarrito.addEventListener("click", () => {
+        productosEnElCarrito = []
+        localStorage.setItem("productos", JSON.stringify(productosEnElCarrito));
+        cargarCarrito()
+    })
+    //Confirmar compra
+
+    confirmarCompra.addEventListener('click', async () => {
+        if (productosEnElCarrito.length === 0) return "no hay productos"
+        await fetch('/cart', {
+            method: 'POST',
+            body: JSON.stringify(productosEnElCarrito),
+            headers: {
+                'Content-Type': "application/json"
+            }
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    Toastify({
+                        text: `Se realizó la compra con éxito`,
+                        duration: 3000,
+                        newWindow: true,
+                        close: true,
+                        gravity: "top", // `top` or `bottom`
+                        position: "right", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to top, rgb(101,65,245), 100%, rgb(32,32,60), 100%);"
+                        },
+                    }).showToast();
+                }
+            })
+        productosEnElCarrito = []
+        localStorage.setItem("productos", JSON.stringify(productosEnElCarrito));
+        cargarCarrito()
+    })
+</script>
+```
+> > cartRouter
+
+```
+import { Router } from "express";
+import { users } from "../models/User.js";
+import dotenv from 'dotenv'
+import { transporter } from "../middlewares/middlewares.js";
+import twilio from 'twilio'
+dotenv.config()
+const router = Router()
+
+router.get('/', (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render('cart')
+    } else {
+        res.redirect('/auth/login')
+    }
+})
+
+
+
+router.post('/', async (req, res) => {
+    const userId = req.session.passport.user;
+    const user = await users.findById(userId);
+    let productosEnElCarrito = (req.body)
+    let contenidoEmail = `
+        <h3>Productos a enviar: <h3>
+        <ul>
+        `
+    productosEnElCarrito.map(item => {
+        contenidoEmail += `<li>nombre: ${item.name}, precio: ${item.precioKg}</li>`
+    })
+    contenidoEmail += `</ul>`
+    let contenidoMensaje = ``
+    productosEnElCarrito.map(item => contenidoMensaje += `nombre: ${item.name}, precio: ${item.precioKg}`)
+
+    //nodemailer
+    const mailOptions = {
+        from: process.env.TEST_MAIL,
+        to: user.email,
+        subject: `Nuevo pedido de ${user.username}`,
+        html: contenidoEmail
+    }
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+            res.send('Error al enviar el correo electrónico');
+        } else {
+            console.log('Correo electrónico enviado: ' + info.response);
+            res.status(200).send('Correo electrónico enviado con éxito');
+        }
+    });
+    //twilio
+    if (user.phone) {
+        const accountSid = process.env.TWILIO_ACCOUNT_SID;
+        const authToken = process.env.TWILIO_AUTH_TOKEN;
+        const client = twilio(accountSid, authToken);
+        client.messages
+            .create({
+                from: 'whatsapp:+14155238886',
+                body: `Nuevo pedido de ${user.username}. ${contenidoMensaje}`,
+                to: `whatsapp:+54351${user.phone}`
+            })
+            .then(message => console.log(message.sid));
+    } 
+})
+export default router
+```

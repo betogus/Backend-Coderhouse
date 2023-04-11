@@ -1,33 +1,24 @@
-<div class="container-item">
+<div class="container">
     <div id="title">
         <h1>Bienvenido {{user.username}}</h1>
-        <div id="logoutBtn" onclick="location.href = '/auth/logout'">Cerrar Sesión</div>
     </div>
     <h1 id="titulo">Vista de Productos</h1>
 
-
+    <div id="products-container">
     {{#if products.length}}
-    <table>
-        <tr>
-            <th>Nombre</th>
-            <th>Precio</th>
-            <th>Foto</th>
-            {{#each products}}
-        </tr>
-
-        <tr>
-            <td>{{title}}</td>
-            <td>{{price}}</td>
-            <td><img src="/uploads/{{thumbnail}}" class="foto" /></td>
-        </tr>
+        {{#each products}}
+            <div class="item-container" id="{{id}}">
+                <p class="item-name">{{name}}</p>
+                <p class="item-precioKg">{{precioKg}}</p>
+            </div>
         {{/each}}
-    </table>
     {{else}}
     <h2> No hay productos por mostrar </h2>
     {{/if}}
+    </div>
 </div>
-
-<script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type="module" src="../../dashboard.js"></script>
 <style>
     #title {
         display: flex;
@@ -36,26 +27,35 @@
         width: 100%;
     }
 
-    table {
+    .item-container {
         background-color: #1f1e1e;
         color: #ffffff;
         width: 400px;
-        padding: 10px;
-        text-align: center;
-
+        margin: 10px;
+        border-radius: 2rem;
+        padding: 20px;
+        cursor: pointer;
+    }
+    .item-name {
+        font-size: large;
+        margin: 0;
     }
 
+    .item-precioKg {
+        font-size: medium;
+        margin: 0;
+        color: #656565;
+    }
     h1 {
         color: #ffffff;
     }
 
 
-    .container-item {
-        margin-top: 100px;
+    .container{
+        padding-top: 100px;
         background-color: rgb(32, 32, 60);
         border-radius: 2rem;
-        width: 600px;
-        padding: 50px;
+        width: 80%;
         display: flex;
         flex-direction: column;
         align-items: center;

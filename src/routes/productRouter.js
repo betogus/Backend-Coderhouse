@@ -1,12 +1,14 @@
 import { Router } from "express";
 import ProductService from "../services/ProductService.js";
+import { PRODUCTS } from "../../public/database/archivos/productos.js";
 
 const router = Router()
 const productManager = new ProductService()
 
 router.get('/', async (req, res) => {
     if (req.isAuthenticated()) {
-        let products = await productManager.getProducts()
+        //let products = await productManager.getProducts()
+        let products = PRODUCTS
         let user = req.cookies?.user || req.session?.user
         res.render('dashboard', {user, products} )
     } else {

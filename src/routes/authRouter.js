@@ -1,28 +1,37 @@
 import { Router } from "express";
 import passport from "passport";
 import path from 'path'
+import { etherealMail, twilioMsg } from "../middlewares/middlewares.js";
+import multer from "multer";
+
+
 
 const router = Router()
 const __dirname = path.resolve();
 
+
+
+
 router.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, './src/public/register/index.html'))
+    res.sendFile(path.join(__dirname, './public/register/index.html'))
 })
 
 router.post('/register', passport.authenticate('register', 
-{failureRedirect: '/auth/registerError'}), (req, res) => {
-    req.session.user = req.body
-    res.redirect('/products')   
+{failureRedirect: '/auth/registerError'}), etherealMail, (req, res) => {
+    let user = req.body
+    user.photo = req.file.filename
+    req.session.user = user
+    res.redirect('/dashboard')   
 })
 
 router.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, './src/public/login/index.html'))
+    res.sendFile(path.join(__dirname, './public/login/index.html'))
 })
 
 router.post('/login', passport.authenticate('login',
 {failureRedirect: '/auth/loginError'}), async (req, res) => {
     req.session.user = req.body
-    res.redirect('/products')
+    res.redirect('/dashboard')
 })
 
 router.get('/logout', (req, res) => {
@@ -44,11 +53,11 @@ router.get('/clearCookies', (req, res) => {
 })
 
 router.get('/loginError', (req, res) => {
-    res.sendFile(path.join(__dirname, './src/public/loginError/index.html'))
+    res.sendFile(path.join(__dirname, './public/loginError/index.html'))
 })
 
 router.get('/registerError', (req, res) => {
-    res.sendFile(path.join(__dirname, './src/public/registerError/index.html'))
+    res.sendFile(path.join(__dirname, './public/registerError/index.html'))
 })
 
 router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}))
@@ -57,10 +66,10 @@ router.get('/google/callback', passport.authenticate('google', {failureRedirect:
     let username = req.user.displayName
     let first_name = req.user.name.givenName
     let last_name = req.user.name.familyName
-    let email = req.user.emails.value
-    let photoURL = req.user.photos.value
+    let email = req.user.emails[0].value
+    let photoURL = req.user.photos[0].value
     req.session.user = {username, first_name, last_name, email, photoURL}
-    res.redirect('/products')
+    res.redirect('/dashboard')
 })
 
 

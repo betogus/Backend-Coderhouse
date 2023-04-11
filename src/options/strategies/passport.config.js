@@ -21,7 +21,9 @@ export const initializePassport = () => {
                         first_name: req.body.first_name, 
                         last_name: req.body.last_name,
                         age: req.body.age,
-                        address: req.body.address
+                        address: req.body.address,
+                        phone: req.body.phone,
+                        photo: req.file.filename
                     }
                     try {
                         let result = await users.create(newUser)

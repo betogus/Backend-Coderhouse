@@ -1,0 +1,128 @@
+<div class="container">
+    <h1 id="titulo">Carrito</h1>
+    <div id="cart-container">
+
+    </div>
+    <div class="button-container">
+        <button type="button" class="button" id="borrarCarrito">Borrar todo</button>
+        <button type="button" class="button" id="confirmarCompra">Confirmar compra</button>
+    </div>
+</div>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+    /* CARGAMOS LOS PRODUCTOS DEL CARRITO */
+    let productosEnElCarrito = JSON.parse(localStorage.getItem("productos")) || [];
+    let cargarCarrito = () => {
+        if (productosEnElCarrito.length === 0) document.getElementById('cart-container').innerHTML = `<h3>No hay productos en el carrito</h3>`
+        for (let i = 0; i < productosEnElCarrito.length; i++) {
+            document.getElementById('cart-container').innerHTML += `
+    <div class="product-item" id="${productosEnElCarrito[i].id}">
+        <p class="product-name">Nombre: ${productosEnElCarrito[i].name}</p>
+        <p class="product-price">Precio: ${productosEnElCarrito[i].precioKg}</p>
+    </div>`
+        }
+    }
+    cargarCarrito()
+
+    /* AGREGAMOS LAS FUNCIONALIDADES DE LOS BOTONES */
+    let borrarCarrito = document.getElementById('borrarCarrito')
+    let confirmarCompra = document.getElementById('confirmarCompra')
+    //Borrar productos del carrito
+    borrarCarrito.addEventListener("click", () => {
+        productosEnElCarrito = []
+        localStorage.setItem("productos", JSON.stringify(productosEnElCarrito));
+        cargarCarrito()
+    })
+    //Confirmar compra
+
+    confirmarCompra.addEventListener('click', async () => {
+        if (productosEnElCarrito.length === 0) return "no hay productos"
+        await fetch('/cart', {
+            method: 'POST',
+            body: JSON.stringify(productosEnElCarrito),
+            headers: {
+                'Content-Type': "application/json"
+            }
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    Toastify({
+                        text: `Se realizó la compra con éxito`,
+                        duration: 3000,
+                        newWindow: true,
+                        close: true,
+                        gravity: "top", // `top` or `bottom`
+                        position: "right", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to top, rgb(101,65,245), 100%, rgb(32,32,60), 100%);"
+                        },
+                    }).showToast();
+                }
+            })
+        productosEnElCarrito = []
+        localStorage.setItem("productos", JSON.stringify(productosEnElCarrito));
+        cargarCarrito()
+    })
+</script>
+<style>
+    #title {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        width: 100%;
+    }
+
+    .product-item {
+        background-color: #1f1e1e;
+        color: #ffffff;
+        width: 400px;
+        margin: 10px;
+        border-radius: 2rem;
+        padding: 20px;
+        cursor: pointer;
+    }
+
+    .product-name {
+        font-size: large;
+        margin: 0;
+    }
+
+    .product-price {
+        font-size: medium;
+        margin: 0;
+        color: #656565;
+    }
+
+    h1, h3 {
+        color: #ffffff;
+    }
+
+
+    .container {
+        padding-top: 100px;
+        background-color: rgb(32, 32, 60);
+        border-radius: 2rem;
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .foto {
+        object-fit: contain;
+        max-width: 30px;
+    }
+
+    .button{
+        background-color: rgb(101, 65, 245);
+        padding: 0px 10px;
+        height: 30px;
+        border-radius: 0.5rem;
+        margin: 5px;
+        display: inline;
+        
+        cursor: pointer;
+    }
+
+</style>
