@@ -17,6 +17,8 @@ import os from 'os'
 import cluster from 'cluster'
 import userRouter from './routes/userRouter.js'
 import cartRouter from './routes/cartRouter.js'
+import { logger } from './winston.js'
+
 /* CONFIGURACION */
 const app = express()
 const NUM_CPUS = os.cpus().length
@@ -77,7 +79,7 @@ if (MODO === "cluster" && cluster.isPrimary) {
     app.use('/api/randoms', apiRouter)
     app.use('/user', userRouter)
     app.use('/cart', cartRouter)
-    
+
     app.get('/', (req, res) => {
         res.redirect('/dashboard')
     })
@@ -97,4 +99,12 @@ if (MODO === "cluster" && cluster.isPrimary) {
             info
         })
     })
+
+    //RUTAS NO DEFINIDAS
+
+app.use((req, res, next) => {
+    logger.warn(`Ruta no encontrada: ${req.originalUrl}`);
+    res.status(404).send("Ruta no encontrada");
+
+});
 }

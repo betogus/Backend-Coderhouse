@@ -1,76 +1,31 @@
 import { Router } from "express";
 import passport from "passport";
-import path from 'path'
-import { etherealMail, twilioMsg } from "../middlewares/middlewares.js";
-import multer from "multer";
-
-
+import { etherealMail } from "../middlewares/middlewares.js";
+import { clearCookies, getGoogle, getLogin, getLoginError, getLogout, getRegister, getRegisterError, postLogin, postRegister } from "../controllers/auth.controller.js";
 
 const router = Router()
-const __dirname = path.resolve();
 
-
-
-
-router.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, './public/register/index.html'))
-})
+router.get('/register', getRegister)
 
 router.post('/register', passport.authenticate('register', 
-{failureRedirect: '/auth/registerError'}), etherealMail, (req, res) => {
-    let user = req.body
-    user.photo = req.file.filename
-    req.session.user = user
-    res.redirect('/dashboard')   
-})
+{failureRedirect: '/auth/registerError'}), etherealMail, postRegister)
 
-router.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, './public/login/index.html'))
-})
+router.get('/login', getLogin)
 
 router.post('/login', passport.authenticate('login',
-{failureRedirect: '/auth/loginError'}), async (req, res) => {
-    req.session.user = req.body
-    res.redirect('/dashboard')
-})
+{failureRedirect: '/auth/loginError'}), postLogin)
 
-router.get('/logout', (req, res) => {
-    if (req.isAuthenticated()) {
-        let {username} = req.session.user
-        res.render('logout', {username})
-    } else {
-        res.redirect('/auth/login')
-    }
-})
+router.get('/logout', getLogout)
 
-router.get('/clearCookies', (req, res) => {
-    req.logout(function(err) {
-        if (err) { console.log(err); }
-        res.clearCookie('user_sid')
-        req.session.destroy()
-        res.redirect('/auth/login')
-    })
-})
+router.get('/clearCookies', clearCookies)
 
-router.get('/loginError', (req, res) => {
-    res.sendFile(path.join(__dirname, './public/loginError/index.html'))
-})
+router.get('/loginError', getLoginError)
 
-router.get('/registerError', (req, res) => {
-    res.sendFile(path.join(__dirname, './public/registerError/index.html'))
-})
+router.get('/registerError', getRegisterError)
 
 router.get('/google', passport.authenticate('google', {scope: ['profile', 'email']}))
 
-router.get('/google/callback', passport.authenticate('google', {failureRedirect: '/auth/loginError'}), (req, res) => {
-    let username = req.user.displayName
-    let first_name = req.user.name.givenName
-    let last_name = req.user.name.familyName
-    let email = req.user.emails[0].value
-    let photoURL = req.user.photos[0].value
-    req.session.user = {username, first_name, last_name, email, photoURL}
-    res.redirect('/dashboard')
-})
+router.get('/google/callback', passport.authenticate('google', {failureRedirect: '/auth/loginError'}), getGoogle)
 
 
 export default router

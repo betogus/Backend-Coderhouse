@@ -1,22 +1,13 @@
 import { Router } from "express";
 import ProductService from "../services/ProductService.js";
-import { PRODUCTS } from "../../public/database/archivos/productos.js";
+import { getProduct } from "../controllers/product.controller.js";
 
 const router = Router()
-const productManager = new ProductService()
+//const productManager = new ProductService()
 
-router.get('/', async (req, res) => {
-    if (req.isAuthenticated()) {
-        //let products = await productManager.getProducts()
-        let products = PRODUCTS
-        let user = req.cookies?.user || req.session?.user
-        res.render('dashboard', {user, products} )
-    } else {
-        res.redirect('/auth/login')
-    }
-}) 
+router.get('/', getProduct) 
 
-router.post('/', async (req, res) => {
+/* router.post('/', async (req, res) => {
     let product = req.body
     if (!product.title || !product.thumbnail || !product.price) {
         res.send({message: "Hay campos vacíos"})
@@ -49,6 +40,6 @@ router.get('/:id', async (req, res) => {
     let {id} = req.params
     let result = await productManager.getProductById(id)
     res.send(result)
-})
+}) */
 
 export default router
