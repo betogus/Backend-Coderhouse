@@ -9,3 +9,4 @@ const schema = new Schema({
 })
 
 export const ProductModel = model('Products', schema)
+export const CartModel = model('Carts', schema)

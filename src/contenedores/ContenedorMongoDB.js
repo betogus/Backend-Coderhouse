@@ -14,7 +14,10 @@ export default class ContenedorMongoDB {
             })
     }
 
-    add = async (data) => {
+    add = async (obj) => {
+        let data = obj
+        let timestamp = new Date().toLocaleString()
+        data.timestamp = timestamp
         try {
             await this.model.create(data)
             return {message: "Se agregó con éxito"}
@@ -40,6 +43,23 @@ export default class ContenedorMongoDB {
             return data
         } catch (err) {
             return { message: "No hubo coincidencias" }
+        }
+
+    }
+
+    getByUsername = async (username) => {
+        try {
+            let data = await this.model.findOne({
+                username: username
+            })
+            if (!data) return {
+                message: "No hubo coincidencias"
+            }
+            return data
+        } catch (err) {
+            return {
+                message: "No hubo coincidencias"
+            }
         }
 
     }

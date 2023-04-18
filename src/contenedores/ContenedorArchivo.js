@@ -7,13 +7,16 @@ export default class ContenedorArchivo {
     async add(obj) {
         const data = await fs.promises.readFile(this.pathToFile, 'utf-8')
         const dataJs = JSON.parse(data)
-
         if (fs.existsSync(this.pathToFile)) {
             if (dataJs.length) {
                 try {
-                    let id = dataJs[dataJs.length - 1].id + 1
                     let data = obj
-                    data.id = id
+                    if (!data.id) {
+                        let id = dataJs[dataJs.length - 1].id + 1
+                        data.id = id
+                    } 
+                    let timestamp = new Date().toLocaleString()
+                    data.timestamp = timestamp
                     dataJs.push(data)
                     await fs.promises.writeFile(this.pathToFile, JSON.stringify(dataJs, null, 2))
                     return `Se agregó con éxito`
@@ -22,11 +25,15 @@ export default class ContenedorArchivo {
                 }
             } else {
                 try {
-                    let id = 1
                     let data = obj
-                    data.id = id
-                    console.log(data)
-                    await fs.promises.writeFile(this.pathToFile, `[${JSON.stringify(data, null, 2)}]`)
+                    if (!data.id) {
+                        let id = 1
+                        data.id = id
+                    }
+                    let timestamp = new Date().toLocaleString()
+                    data.timestamp = timestamp
+                    dataJs.push(data)
+                    await fs.promises.writeFile(this.pathToFile, `${JSON.stringify(dataJs, null, 2)}`)
                     return "Se agregó con éxito"
                 } catch {
                     return 'Error al crear el archivo ' + this.pathToFile
@@ -45,6 +52,22 @@ export default class ContenedorArchivo {
                 const dataJs = JSON.parse(datas)
                 const data = dataJs.find(item => item.id === parseInt(id))
                 if (data.id === undefined) return "No hay coincidencias en el archivo " + this.pathToFile
+                return data
+            } catch {
+                return "No hay coincidencias en el archivo " + this.pathToFile
+            }
+        } else {
+            return "No existe el archivo " + this.pathToFile
+        }
+    }
+
+    async getByUsername(username) {
+        if (fs.existsSync(this.pathToFile)) {
+            try {
+                const datas = await fs.promises.readFile(this.pathToFile, 'utf-8')
+                const dataJs = JSON.parse(datas)
+                const data = dataJs.filter(item => item.username === username)
+                if (data.length === 0) return "No hay coincidencias en el archivo " + this.pathToFile
                 return data
             } catch {
                 return "No hay coincidencias en el archivo " + this.pathToFile

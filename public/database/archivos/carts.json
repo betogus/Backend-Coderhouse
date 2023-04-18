@@ -1,0 +1,48 @@
+[
+  {
+    "products": [
+      {
+        "id": 1,
+        "name": "POROTOS ALUBIA",
+        "precio100gr": 30,
+        "precioKg": 220,
+        "hayStock": true,
+        "categoryId": 1
+      },
+      {
+        "id": 2,
+        "name": "POROTOS DE SOJA",
+        "precio100gr": 12,
+        "precioKg": 95,
+        "hayStock": true,
+        "categoryId": 1
+      }
+    ],
+    "username": "gusmtorres",
+    "id": "6435c4f4a22d57d48a5fcdb3",
+    "timestamp": "18/4/2023, 00:29:34"
+  },
+  {
+    "products": [
+      {
+        "id": 29,
+        "name": "BOLITAS DE CHOCOLATE",
+        "precio100gr": 45,
+        "precioKg": 415,
+        "hayStock": true,
+        "categoryId": 2
+      },
+      {
+        "id": 30,
+        "name": "ALMOHADITAS DOBLE SALVADO",
+        "precio100gr": 40,
+        "precioKg": 360,
+        "hayStock": true,
+        "categoryId": 2
+      }
+    ],
+    "username": "gusmtorres",
+    "id": "6435c4f4a22d57d48a5fcdb3",
+    "timestamp": "18/4/2023, 01:07:24"
+  }
+]

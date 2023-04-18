@@ -18,6 +18,7 @@ import cluster from 'cluster'
 import userRouter from './routes/userRouter.js'
 import cartRouter from './routes/cartRouter.js'
 import { logger } from './winston.js'
+import orderRouter from './routes/orderRouter.js'
 
 /* CONFIGURACION */
 const app = express()
@@ -79,6 +80,7 @@ if (MODO === "cluster" && cluster.isPrimary) {
     app.use('/api/randoms', apiRouter)
     app.use('/user', userRouter)
     app.use('/cart', cartRouter)
+    app.use('/order', orderRouter)
 
     app.get('/', (req, res) => {
         res.redirect('/dashboard')

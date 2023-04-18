@@ -32,7 +32,7 @@ const serviceAccount = JSON.parse(fs.readFileSync('./src/options/credentials.jso
 export const configFirebase = {
     db: admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        databaseURL: "https://desafio10-cd04e-default-rtdb.firebaseio.com"
+        databaseURL: "https://coderback-e255e-default-rtdb.firebaseio.com"
     })
 }
 

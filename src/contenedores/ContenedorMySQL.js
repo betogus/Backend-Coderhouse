@@ -47,6 +47,23 @@ export default class ContenedorMySQL {
         
     }
 
+     getByUsername = async (username) => {
+         try {
+             let data = await this.db.from(this.table).select("*").where({
+                 username: username
+             })
+             if (data.length === 0) return {
+                 message: "No hay datos"
+             }
+             return (JSON.parse(JSON.stringify(data)))
+         } catch (err) {
+             return {
+                 err
+             }
+         }
+
+     }
+
     update = async (id, obj) => {
         try {
             await this.db.from(this.table).select("*").where({id}).update(obj)

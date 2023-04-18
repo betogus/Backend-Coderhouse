@@ -18,6 +18,14 @@ export default class ContenedorFirebase {
         return {...data.data(), id:data.id}
     }
 
+    async getByUsername(username) {
+        if (!this.collection) return {message: "No existe la BD"}
+        const querySnapshot = await this.db.collection(this.collection).where('username', "==", username).get()
+        if (querySnapshot.empty) return { message: "No hay datos" }
+        const data = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        return data;
+    }
+
     async add(item) {
         try {
             let timestamp = new Date().toLocaleString()

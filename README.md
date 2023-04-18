@@ -1,8 +1,7 @@
-# Desafio 19
+# Desafio 20
 
-## Tercera entrega del proyecto final
+## Mejorar la arquitectura de nuestra api
 
-**
 
 > Base de datos
 
@@ -13,69 +12,223 @@
 mongod --dbpath “C:\Program Files\MongoDB\miBaseDeDatos” 
 ```
 
-> Consigna
+> Persistencia
 
-> > Dividir en capas el proyecto entregable con el que venimos trabajando
-(entregable clase 16: loggers y profilers), agrupando apropiadamente las capas de ruteo,
-controlador, lógica de negocio y persistencia.
-Considerar agrupar las rutas por funcionalidad, con sus controladores, lógica de negocio con
-los casos de uso, y capa de persistencia.
-La capa de persistencia contendrá los métodos necesarios para atender la interacción de la
-lógica de negocio con los propios datos.
-
-> A tener en cuenta
-
-> > Cuando queremos que del service le envíe al controller un status, debemos generar una promise, y desde el controller usar un .then para recibirlo. El service queda de la siguiente manera:
+> > Utilizaremos distintas bases de datos para almacenar las órdenes de compra. Éstes contendrán los datos del usuario (id, username), el timestamp y los productos. Los tipos de persistencia utilizados serán en archivo, en memoria y en firebase. En primer lugar, modificamos las clases ContenedorArchivo, ContenedorFirebase y ContenedorMemoria para incluirles el método getByUsername. Ej. en Firebase
 
 ```
-export async function enviarEmail(userId, productosEnElCarrito)  {
-    const user = await users.findById(userId);
-    let contenidoEmail = `
-        <h3>Productos a enviar: <h3>
-        <ul>
-        `
-    productosEnElCarrito.map(item => {
-        contenidoEmail += `<li>nombre: ${item.name}, precio: ${item.precioKg}</li>`
-    })
-    contenidoEmail += `</ul>`
-    let contenidoMensaje = ``
-    productosEnElCarrito.map(item => contenidoMensaje += `nombre: ${item.name}, precio: ${item.precioKg}`)
+async getByUsername(username) {
+        if (!this.collection) return {message: "No existe la BD"}
+        const querySnapshot = await this.db.collection(this.collection).where('username', "==", username).get()
+        if (querySnapshot.empty) return { message: "No hay datos" }
+        const data = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        return data;
+    }
+```
 
-    return new Promise((resolve, reject) => {
-        //nodemailer
-        const mailOptions = {
-            from: process.env.TEST_MAIL,
-            to: user.email,
-            subject: `Nuevo pedido de ${user.username}`,
-            html: contenidoEmail
-        }
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.log(error);
-                reject('Error al enviar el correo electrónico');
-            } else {
-                console.log('Correo electrónico enviado: ' + info.response);
-                resolve(200)
-            }
-        });
-    }) 
+> > Esta clase es utilizada en el CartsDaoFirebase
+
+```
+import ContenedorFirebase from "../../contenedores/ContenedorFirebase.js";
+import { configFirebase } from "../../options/db.config.js";
+
+export default class CartsDaoFirebase extends ContenedorFirebase {
+    constructor() {
+        super("Carts", configFirebase.db)
+    }
 }
 ```
-
-> > Y el controller:
+> > Creamos el order.service el cual sólo dependerá del PersistenceFactory
 
 ```
-export const postCart = async (req, res) => {
+import PersistenceFactory from "../daos/index.js";
+
+class OrderService {
+    constructor() {
+        this.orderDao
+        this.#init()
+    }
+
+    #init = async () => {
+        this.orderDao = await PersistenceFactory.getPersistence()
+    }
+
+    addOrder = async (order) => {
+        return await this.orderDao.add(order)
+    }
+
+    gerOrders = async () => {
+        return await this.orderDao.getAll()
+    }
+
+    getOrdersByUsername = async (username) => {
+        return await this.orderDao.getByUsername(username)
+    }
+
+    deleteOrder = async (id) => {
+        return await this.orderDao.delete(id)
+    }
+
+}
+
+export const orderService = new OrderService()
+
+```
+
+> > Dentro de la carpeta daos, tendremos un index en el cual aquí se definirá el tipo de persistencia de acuerdo a una variable definida en nuestro archivo .env
+
+
+```
+import { app } from '../options/db.config.js'
+
+export default class PersistenceFactory {
+    static getPersistence = async () => {
+        switch(app.persistence) {
+            case "MONGO":
+                let {default: CartsDaoMongoDB} = await import('../daos/carts/CartsDaoMongoDB.js')
+                console.log("Persistencia: MONGO")
+                return new CartsDaoMongoDB()
+            case "FILE":
+                let {default: CartsDaoFile} = await import('../daos/carts/CartsDaoFile.js')
+                console.log("Persistencia: FILE")
+                return new CartsDaoFile()
+            case "MEMORY":
+                let {default: CartsDaoMemory} = await import('../daos/carts/CartsDaoMemory.js')
+                console.log("Persistencia: MEMORY")
+                return new CartsDaoMemory() 
+            case "MYSQL":
+                let {default: CartsDaoMySQL} = await import('../daos/carts/CartsDaoMySQL.js')
+                return new CartsDaoMySQL
+            case "FIREBASE":
+                let {default: CartsDaoFirebase} = await import('../daos/carts/CartsDaoFirebase.js')
+                console.log("Persistencia: FIREBASE")
+                return new CartsDaoFirebase
+        }
+    }
+}
+
+``` 
+
+> > Agregamos en el main.handlebars una nueva pestaña que será la de las órdenes de compras
+
+```
+<li class="header-nav-item"><a href="/order">Mis órdenes</a></li>
+```
+
+> > Creamos nuestro order.handlebars
+
+```
+<div class="container">
+    <h1 id="titulo">Órdenes</h1>
+    <div id="order-container">
+        {{#if orders.length}}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            {{#each orders}}
+            {{#each this.products}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{price}}</td>
+                <td>{{../timestamp}}</td>
+            </tr>
+            {{/each}}
+            {{/each}}
+        </table>
+        {{else}}
+        <h3>No hay órdenes</h3>
+        {{/if}}
+    </div>
+</div>
+```
+
+> > En el cart.handlebars, modificamos el evento "click" de "confirmar compra", cambiando el fetch de "/cart" a "/order". A su vez, la lógica de respuesta a este fetch, se hará en el order.controller. Pero antes, debemos crear el OrderDto que es el que se encargará de enviarle al front sólo la info necesaria, que será el timestamp, nombre y precio de los productos, y el username.
+
+```
+export default class OrderDTO {
+    constructor(order) {
+        this.username = order.username,
+        this.timestamp = order.timestamp,
+        this.products = []
+        this.addProduct(order)
+    }
+
+    addProduct(order) {
+        if (order?.products?.length) {
+            for (let i = 0; i < order.products.length; i++) {
+                let product = order.products[i]
+                this.products.push({name: product.name, price: product.precioKg})
+            }
+        }
+
+    }
+}
+```
+> > order.controller:
+
+```
+import OrderDTO from "../dtos/OrderDto.js"
+import { enviarEmail } from "../middlewares/middlewares.js"
+import { orderService } from "../services/order.service.js"
+
+export const getOrderById = async (req, res) => {
+    if (req.isAuthenticated()) {
+        let {username} = req.session.user
+        let orders = await orderService.getOrdersByUsername(username)
+        let ordersDTO = []
+        for (let i = 0; i < orders.length; i++) {
+            let orderDTO = new OrderDTO(orders[i])
+            ordersDTO.push({...orderDTO})
+        } 
+        res.render('order', {orders: ordersDTO})
+    } else {
+        res.redirect('/auth/login')
+    }
+    
+}
+
+export const postOrder = async (req, res) => {
     const userId = req.session.passport?.user;
     if (userId) {
-        let productosEnElCarrito = (req.body)
-        enviarEmail(userId, productosEnElCarrito)
-        .then(status => {
-            res.status(status).send()
-        })
+        let products = req.body
+        let order = {products, username: userId.username, id:userId._id}
+        try {
+            await orderService.addOrder(order)
+            await enviarEmail(userId, products)
+            res.status(200).send()
+        } catch (err) {
+            res.status(500).send()
+        }
+       
     } else {
         res.redirect('/auth/login')
     }
 }
 ```
 
+> > orderRouter:
+
+```
+import { Router } from "express";
+import { getOrderById, postOrder } from "../controllers/order.controller.js";
+
+
+const router = Router()
+
+router.post('/', postOrder)
+router.get('/', getOrderById)
+
+export default router
+```
+
+> > app.js
+
+
+```
+app.use('/order', orderRouter)
+```

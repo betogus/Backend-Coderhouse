@@ -2,23 +2,26 @@ import { app } from '../options/db.config.js'
 
 export default class PersistenceFactory {
     static getPersistence = async () => {
-        console.log(app) 
         switch(app.persistence) {
             case "MONGO":
-                let {default: ProductosDaoMongoDB} = await import('../daos/productos/ProductosDaoMongoDB.js')
-                return new ProductosDaoMongoDB()
+                let {default: CartsDaoMongoDB} = await import('../daos/carts/CartsDaoMongoDB.js')
+                console.log("Persistencia: MONGO")
+                return new CartsDaoMongoDB()
             case "FILE":
-                let {default: ProductosDaoArchivo} = await import('../daos/productos/ProductosDaoArchivo.js')
-                return new ProductosDaoArchivo()
+                let {default: CartsDaoFile} = await import('../daos/carts/CartsDaoFile.js')
+                console.log("Persistencia: FILE")
+                return new CartsDaoFile()
             case "MEMORY":
-                let {default: ProductosDaoMemoria} = await import('../daos/productos/ProductosDaoMemoria.js')
-                return new ProductosDaoMemoria() 
+                let {default: CartsDaoMemory} = await import('../daos/carts/CartsDaoMemory.js')
+                console.log("Persistencia: MEMORY")
+                return new CartsDaoMemory() 
             case "MYSQL":
-                let {default: ProductosDaoMySQL} = await import('../daos/productos/ProductosDaoMySQL.js')
-                return new ProductosDaoMySQL
+                let {default: CartsDaoMySQL} = await import('../daos/carts/CartsDaoMySQL.js')
+                return new CartsDaoMySQL
             case "FIREBASE":
-                let {default: ProductosDaoFirebase} = await import('../daos/productos/ProductosDaoFirebase.js')
-                return new ProductosDaoFirebase
+                let {default: CartsDaoFirebase} = await import('../daos/carts/CartsDaoFirebase.js')
+                console.log("Persistencia: FIREBASE")
+                return new CartsDaoFirebase
         }
     }
 }

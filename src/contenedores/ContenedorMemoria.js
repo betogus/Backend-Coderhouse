@@ -9,12 +9,21 @@ export default class ContenedorMemoria {
         } else {
             obj.id = this.array[this.array.length-1].id+1
         }
-        this.array.push(obj)
+        let data = obj
+        let timestamp = new Date().toLocaleString()
+        data.timestamp = timestamp
+        this.array.push(data)
         return {message: "Se agregó con éxito"}
     }
 
     getById(id) {
         let data = this.array.find(item => item.id === parseInt(id))
+        if (!data) return {message: "No hay coincidencias"}
+        return data
+    }
+
+    getByUsername(username) {
+        let data = this.array.filter(item => item.username === username)
         if (!data) return {message: "No hay coincidencias"}
         return data
     }
