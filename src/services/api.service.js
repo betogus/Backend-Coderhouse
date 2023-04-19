@@ -1,13 +1,13 @@
-import PersistenceFactory from "../daos/index.js";
+import ApiPersistenceFactory from "../daos/productos/index.js";
 
-export default class ProductService {
+class ApiService {
     constructor() {
         this.productDao
         this.#init()
     }
 
     #init = async () => {
-        this.productDao = await PersistenceFactory.getPersistence()
+        this.productDao = await ApiPersistenceFactory.getPersistence()
     }
 
     addProduct = async (product) => {
@@ -31,3 +31,4 @@ export default class ProductService {
     }
 }
 
+export const apiService = new ApiService()

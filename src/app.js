@@ -12,7 +12,7 @@ import MongoStore from 'connect-mongo'
 import passport from 'passport'
 import googleStrategy from './options/strategies/google.js'
 import { PORT, MODO } from './yargs.cjs'
-import apiRouter from './routes/apiRouther.js'
+import apiRouter from './routes/apiRouter.js'
 import os from 'os'
 import cluster from 'cluster'
 import userRouter from './routes/userRouter.js'
@@ -77,7 +77,7 @@ if (MODO === "cluster" && cluster.isPrimary) {
     /* RUTAS */
     app.use('/dashboard', productRouter)
     app.use('/auth', authRouter)
-    app.use('/api/randoms', apiRouter)
+    app.use('/products', apiRouter)
     app.use('/user', userRouter)
     app.use('/cart', cartRouter)
     app.use('/order', orderRouter)
@@ -104,7 +104,7 @@ if (MODO === "cluster" && cluster.isPrimary) {
 
     //RUTAS NO DEFINIDAS
 
-app.use((req, res, next) => {
+app.use((req, res) => {
     logger.warn(`Ruta no encontrada: ${req.originalUrl}`);
     res.status(404).send("Ruta no encontrada");
 

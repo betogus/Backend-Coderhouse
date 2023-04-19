@@ -125,3 +125,60 @@ export async function enviarEmail(userId, productosEnElCarrito)  {
     })
     
 }
+
+
+
+export const validateApi = (req, res, next) => {
+    let product = req.body;
+    console.log(`Validando producto: ${JSON.stringify(product)}`);
+
+    const errors = [];
+
+    if (!product.name || typeof product.name !== "string") {
+        errors.push(`- El nombre es inválido: ${product.name}`);
+    }
+
+    if (!product.id || typeof product.id !== "number") {
+        errors.push(`- El ID es inválido: ${product.id}`);
+    }
+
+    if (
+        !product.precioKg ||
+        typeof product.precioKg !== "number" ||
+        product.precioKg <= 0
+    ) {
+        errors.push(`- El precio por kg es inválido: ${product.precioKg}`);
+    }
+
+    if (
+        !product.precio100gr ||
+        typeof product.precio100gr !== "number" ||
+        product.precio100gr <= 0
+    ) {
+        errors.push(`- El precio por 100 gramos es inválido: ${product.precio100gr}`);
+    }
+
+    if (typeof product.hayStock !== "boolean") {
+        errors.push(`- El valor de stock es inválido: ${product.hayStock}`);
+    }
+
+    if (
+        !product.categoryId ||
+        typeof product.categoryId !== "number" ||
+        !Number.isInteger(product.categoryId) ||
+        product.categoryId < 1 ||
+        product.categoryId > 5
+    ) {
+        errors.push(`- El ID de categoría es inválido: ${product.categoryId}`);
+    }
+
+    if (errors.length > 0) {
+        console.log(`Errores de validación:\n${errors.join("\n")}`);
+        return res.status(400).send({
+            message: "Error en la validación",
+        });
+    }
+
+    console.log("El producto ha pasado la validación");
+    next();
+};

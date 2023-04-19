@@ -38,6 +38,7 @@ export const configFirebase = {
 
 
 export const app = {
-    persistence: process.env.PERSISTENCE
+    cartPersistence: process.env.CART_PERSISTENCE,
+    apiPersistence: process.env.API_PERSISTENCE
 }
 

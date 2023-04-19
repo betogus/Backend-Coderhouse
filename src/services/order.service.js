@@ -1,4 +1,4 @@
-import PersistenceFactory from "../daos/index.js";
+import CartPersistenceFactory from "../daos/carts/index.js";
 
 class OrderService {
     constructor() {
@@ -7,7 +7,7 @@ class OrderService {
     }
 
     #init = async () => {
-        this.orderDao = await PersistenceFactory.getPersistence()
+        this.orderDao = await CartPersistenceFactory.getPersistence()
     }
 
     addOrder = async (order) => {

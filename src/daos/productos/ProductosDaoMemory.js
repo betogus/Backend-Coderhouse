@@ -1,6 +1,6 @@
 import ContenedorMemoria from "../../contenedores/ContenedorMemoria.js"
 
-export default class ProductosDaoMemoria extends ContenedorMemoria {
+export default class ProductosDaoMemory extends ContenedorMemoria {
     constructor() {
         super()
     }

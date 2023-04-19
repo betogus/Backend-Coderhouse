@@ -1,0 +1,209 @@
+[
+  {
+    "id": 82870,
+    "name": "Artesanal Acero Toallas",
+    "precio100gr": 46,
+    "precioKg": 291,
+    "hayStock": false,
+    "categoryId": 3,
+    "timestamp": "18/4/2023, 22:12:31"
+  },
+  {
+    "id": 64492,
+    "name": "Rústico Metal Patatas fritas",
+    "precio100gr": 16,
+    "precioKg": 244,
+    "hayStock": true,
+    "categoryId": 4,
+    "timestamp": "18/4/2023, 22:17:21"
+  },
+  {
+    "id": 4535,
+    "name": "Ergonómico Hormigon Coche",
+    "precio100gr": 25,
+    "precioKg": 158,
+    "hayStock": true,
+    "categoryId": 1,
+    "timestamp": "18/4/2023, 22:17:21"
+  },
+  {
+    "id": 97191,
+    "name": "Increible Plástico Teclado",
+    "precio100gr": 32,
+    "precioKg": 189,
+    "hayStock": false,
+    "categoryId": 3,
+    "timestamp": "18/4/2023, 22:18:56"
+  },
+  {
+    "id": 77289,
+    "name": "Artesanal Hormigon Atún",
+    "precio100gr": 24,
+    "precioKg": 283,
+    "hayStock": false,
+    "categoryId": 1,
+    "timestamp": "18/4/2023, 22:18:56"
+  },
+  {
+    "id": 34122,
+    "name": "Hecho a mano Plástico Bacon",
+    "precio100gr": 47,
+    "precioKg": 270,
+    "hayStock": true,
+    "categoryId": 1,
+    "timestamp": "18/4/2023, 22:21:20"
+  },
+  {
+    "id": 21563,
+    "name": "Sorprendente Granito Gorro",
+    "precio100gr": 12,
+    "precioKg": 295,
+    "hayStock": false,
+    "categoryId": 5,
+    "timestamp": "18/4/2023, 22:21:20"
+  },
+  {
+    "id": 89375,
+    "name": "Increible Madera Silla",
+    "precio100gr": 29,
+    "precioKg": 156,
+    "hayStock": true,
+    "categoryId": 1,
+    "timestamp": "18/4/2023, 22:23:01"
+  },
+  {
+    "id": 55882,
+    "name": "Increible Ladrillo Pollo",
+    "precio100gr": 32,
+    "precioKg": 172,
+    "hayStock": true,
+    "categoryId": 3,
+    "timestamp": "18/4/2023, 22:23:01"
+  },
+  {
+    "id": 1592,
+    "name": "Sorprendente Plástico Zapatos",
+    "precio100gr": 32,
+    "precioKg": 201,
+    "hayStock": false,
+    "categoryId": 2,
+    "timestamp": "18/4/2023, 22:24:55"
+  },
+  {
+    "id": 16122,
+    "name": "Refinado Plástico Toallas",
+    "precio100gr": 27,
+    "precioKg": 287,
+    "hayStock": true,
+    "categoryId": 3,
+    "timestamp": "18/4/2023, 22:24:55"
+  },
+  {
+    "id": 51015,
+    "name": "Sabroso Algodón Toallas",
+    "precio100gr": 35,
+    "precioKg": 256,
+    "hayStock": true,
+    "categoryId": 5,
+    "timestamp": "18/4/2023, 22:27:00"
+  },
+  {
+    "id": 79977,
+    "name": "Increible Hormigon Pollo",
+    "precio100gr": 43,
+    "precioKg": 295,
+    "hayStock": true,
+    "categoryId": 4,
+    "timestamp": "18/4/2023, 22:27:01"
+  },
+  {
+    "id": 15128,
+    "name": "Fantástico Metal Teclado",
+    "precio100gr": 47,
+    "precioKg": 209,
+    "hayStock": false,
+    "categoryId": 3,
+    "timestamp": "18/4/2023, 22:27:35"
+  },
+  {
+    "id": 58035,
+    "name": "Artesanal Hormigon Ensalada",
+    "precio100gr": 35,
+    "precioKg": 217,
+    "hayStock": true,
+    "categoryId": 5,
+    "timestamp": "18/4/2023, 22:27:35"
+  },
+  {
+    "id": 83599,
+    "name": "Fantástico Granito Silla",
+    "precio100gr": 39,
+    "precioKg": 262,
+    "hayStock": true,
+    "categoryId": 1,
+    "timestamp": "18/4/2023, 22:28:57"
+  },
+  {
+    "id": 47342,
+    "name": "Fantástico Hormigon Pelota",
+    "precio100gr": 38,
+    "precioKg": 234,
+    "hayStock": true,
+    "categoryId": 1,
+    "timestamp": "18/4/2023, 22:28:57"
+  },
+  {
+    "id": 47821,
+    "name": "Hecho a mano Acero Pescado",
+    "precio100gr": 17,
+    "precioKg": 192,
+    "hayStock": true,
+    "categoryId": 1,
+    "timestamp": "18/4/2023, 22:31:25"
+  },
+  {
+    "id": 43865,
+    "name": "Pequeño Granito Coche",
+    "precio100gr": 44,
+    "precioKg": 185,
+    "hayStock": true,
+    "categoryId": 4,
+    "timestamp": "18/4/2023, 22:31:25"
+  },
+  {
+    "id": 832,
+    "name": "Guapo Acero Bacon",
+    "precio100gr": 26,
+    "precioKg": 201,
+    "hayStock": false,
+    "categoryId": 5,
+    "timestamp": "18/4/2023, 22:32:00"
+  },
+  {
+    "id": 47884,
+    "name": "Guapa Acero Mesa",
+    "precio100gr": 33,
+    "precioKg": 202,
+    "hayStock": true,
+    "categoryId": 2,
+    "timestamp": "18/4/2023, 22:32:00"
+  },
+  {
+    "id": 50980,
+    "name": "Ergonómico Hormigon Queso",
+    "precio100gr": 46,
+    "precioKg": 258,
+    "hayStock": true,
+    "categoryId": 5,
+    "timestamp": "18/4/2023, 22:32:36"
+  },
+  {
+    "id": 10024,
+    "name": "Fantástico Hormigon Bicicleta",
+    "precio100gr": 31,
+    "precioKg": 229,
+    "hayStock": true,
+    "categoryId": 3,
+    "timestamp": "18/4/2023, 22:32:36"
+  }
+]
