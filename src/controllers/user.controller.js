@@ -4,8 +4,7 @@ import { getUserById } from "../services/user.service.js";
 export const getUser = async (req, res) => {
     if (req.isAuthenticated()) {
         try {
-            const userId = req.session.passport.user;
-            const user = await getUserById(userId);
+            const user = req.session.passport.user;
             res.render('user', {
                 username: user.username,
                 email: user.email,

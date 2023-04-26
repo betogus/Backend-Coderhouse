@@ -5,13 +5,13 @@ mongoose.set("strictQuery", false); //Ésto es por una incopatibilidad de versio
 export default class ContenedorMongoDB {
     constructor(model, config) {
         this.model = model
-        this.mongoose = mongoose.connect(config.url)
+        /* this.mongoose = mongoose.connect(config.url)
             .then(() => {
                 console.log("Conectado a la base de datos de mongo")
             })
             .catch((err) => {
                 console.log(err)
-            })
+            }) */
     }
 
     add = async (obj) => {

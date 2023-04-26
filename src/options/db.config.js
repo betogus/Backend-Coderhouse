@@ -1,4 +1,5 @@
 import dotenv from 'dotenv'
+import config from './env.config.js'
 dotenv.config()
 
 export const configMySQL = {
@@ -7,7 +8,7 @@ export const configMySQL = {
         host: '127.0.0.1',
         user: 'root',
         password: 'password',
-        database: 'desafio10'
+        database: 'coderback'
     }
 }
 
@@ -38,7 +39,8 @@ export const configFirebase = {
 
 
 export const app = {
-    cartPersistence: process.env.CART_PERSISTENCE,
-    apiPersistence: process.env.API_PERSISTENCE
+    cartPersistence: config.CART_PERSISTENCE,
+    apiPersistence: config.API_PERSISTENCE,
+    chatPersistence: config.CHAT_PERSISTENCE
 }
 

@@ -1,0 +1,20 @@
+paths:
+  /products/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: ID del producto a actualizar o eliminar
+        required: true
+        type: integer
+        format: int64
+    delete:
+          summary: Eliminar un producto existente por su ID
+          tags:
+            - Product
+          parameters:
+           
+          responses:
+            "204":
+              description: 'Producto eliminado'
+            "401":
+              description: 'No autorizado'

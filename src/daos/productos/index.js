@@ -17,11 +17,12 @@ export default class ApiPersistenceFactory {
                 return new ProductosDaoMemory() 
             case "MYSQL":
                 let {default: ProductosDaoMySQL} = await import('./ProductosDaoMySQL.js')
-                return new ProductosDaoMySQL
+                console.log("Persistencia de productos: MySQL")
+                return new ProductosDaoMySQL()
             case "FIREBASE":
                 let {default: ProductosDaoFirebase} = await import('./ProductosDaoFirebase.js')
                 console.log("Persistencia de productos: FIREBASE")
-                return new ProductosDaoFirebase
+                return new ProductosDaoFirebase()
         }
     }
 }

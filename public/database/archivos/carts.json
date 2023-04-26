@@ -44,5 +44,129 @@
     "username": "gusmtorres",
     "id": "6435c4f4a22d57d48a5fcdb3",
     "timestamp": "18/4/2023, 01:07:24"
+  },
+  {
+    "products": [
+      {
+        "id": 1,
+        "name": "POROTOS ALUBIA",
+        "precio100gr": 30,
+        "precioKg": 220,
+        "hayStock": true,
+        "categoryId": 1
+      },
+      {
+        "id": 2,
+        "name": "POROTOS DE SOJA",
+        "precio100gr": 12,
+        "precioKg": 95,
+        "hayStock": true,
+        "categoryId": 1
+      },
+      {
+        "id": 3,
+        "name": "POROTOS ADUKI",
+        "precio100gr": 35,
+        "precioKg": 310,
+        "hayStock": true,
+        "categoryId": 1
+      }
+    ],
+    "username": "gusmtorres",
+    "id": "6435c4f4a22d57d48a5fcdb3",
+    "timestamp": "25/4/2023, 21:01:25"
+  },
+  {
+    "products": [
+      {
+        "id": 7,
+        "name": "POROTOS LUPINES",
+        "precio100gr": 25,
+        "precioKg": 225,
+        "hayStock": true,
+        "categoryId": 1
+      },
+      {
+        "id": 5,
+        "name": "POROTOS MUNG",
+        "precio100gr": 20,
+        "precioKg": 190,
+        "hayStock": true,
+        "categoryId": 1
+      },
+      {
+        "id": 33,
+        "name": "ALMOHADITAS AVELLANA",
+        "precio100gr": 55,
+        "precioKg": 520,
+        "hayStock": true,
+        "categoryId": 2
+      }
+    ],
+    "username": "gusmtorres",
+    "id": "6435c4f4a22d57d48a5fcdb3",
+    "timestamp": "25/4/2023, 21:02:05"
+  },
+  {
+    "products": [
+      {
+        "id": 1,
+        "name": "POROTOS ALUBIA",
+        "precio100gr": 30,
+        "precioKg": 220,
+        "hayStock": true,
+        "categoryId": 1
+      },
+      {
+        "id": 2,
+        "name": "POROTOS DE SOJA",
+        "precio100gr": 12,
+        "precioKg": 95,
+        "hayStock": true,
+        "categoryId": 1
+      },
+      {
+        "id": 3,
+        "name": "POROTOS ADUKI",
+        "precio100gr": 35,
+        "precioKg": 310,
+        "hayStock": true,
+        "categoryId": 1
+      }
+    ],
+    "username": "gusmtorres",
+    "id": "6435c4f4a22d57d48a5fcdb3",
+    "timestamp": "25/4/2023, 21:03:04"
+  },
+  {
+    "products": [
+      {
+        "id": 30,
+        "name": "ALMOHADITAS DOBLE SALVADO",
+        "precio100gr": 40,
+        "precioKg": 360,
+        "hayStock": true,
+        "categoryId": 2
+      },
+      {
+        "id": 31,
+        "name": "ALMOHADITAS FRUTILLA",
+        "precio100gr": 55,
+        "precioKg": 520,
+        "hayStock": true,
+        "categoryId": 2
+      },
+      {
+        "id": 32,
+        "name": "ALMOHADITAS LIMÓN",
+        "precio100gr": 65,
+        "precioKg": 640,
+        "hayStock": true,
+        "categoryId": 2
+      }
+    ],
+    "username": "gusmtorres",
+    "id": "6435c4f4a22d57d48a5fcdb3",
+    "timestamp": "25/4/2023, 21:04:59"
   }
 ]

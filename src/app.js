@@ -17,24 +17,43 @@ import os from 'os'
 import cluster from 'cluster'
 import userRouter from './routes/userRouter.js'
 import cartRouter from './routes/cartRouter.js'
+import chatRouter from './routes/chatRouter.js'
 import { logger } from './winston.js'
 import orderRouter from './routes/orderRouter.js'
+import config from './options/env.config.js'
+import cors from 'cors'
+import swaggerJSDoc from 'swagger-jsdoc'
+import swaggerUI from 'swagger-ui-express'
+import { getUser } from './controllers/user.controller.js'
+import { chatService } from './services/chat.service.js'
+import sharedSession from 'express-socket.io-session'
+import { users } from './models/User.js'
+import compression from 'compression'
 
 /* CONFIGURACION */
 const app = express()
+let modo = MODO;
+if (config.NODE_ENV=="dev") app.use(cors())
+else {
+    app.use(compression())
+    modo = "cluster"
+}
+
 const NUM_CPUS = os.cpus().length
-let puerto = PORT || 8080;
-if (MODO === "cluster" && cluster.isPrimary) {
-    console.log(`Proceso principal ${process.pid} está corriendo`)
+let puerto = PORT || config.PORT;
+if (modo === "cluster" && cluster.isPrimary) {
+    logger.info("Iniciando en modo cluster")
+    logger.info(`Proceso principal ${process.pid} está corriendo`)
     for (let i = 0; i < NUM_CPUS; i++) {
         cluster.fork()
     }
     cluster.on('exit', (worker, code, signal) => {
-        console.log(`Proceso ${worker.process.pid} murió`)
+        logger.info(`Proceso ${worker.process.pid} murió`)
     })
 } else {
-    app.listen(puerto, () => {
-        console.log(`Iniciando servidor en puerto ${puerto}`)
+    let server = app.listen(puerto, () => {
+        logger.info(`Iniciando servidor en puerto ${puerto}`)
+        logger.info(`${config.NODE_ENV}`)
     })
 
     app.use(express.json())
@@ -45,6 +64,23 @@ if (MODO === "cluster" && cluster.isPrimary) {
     app.set('views', './public/views/handlebars')
     app.set('view engine', 'handlebars')
 
+
+    /* SWAGGER */
+    const swaggerSpec = {
+        definition: {
+            openapi: '3.0.0', //es la versión de las especificaciones que usaremos
+            info: {
+                title: 'My Awesome API Documentation',
+                version: '1.0.0'
+            },
+            servers: [{
+                url: 'http://localhost:8080'
+            }]
+        },
+        apis: ["./src/docs/**/*.yaml"]
+    }
+
+    app.use('/documentation', swaggerUI.serve, swaggerUI.setup(swaggerJSDoc(swaggerSpec)))
     app.use(cookieParser())
 
     /* MULTER */
@@ -58,19 +94,23 @@ if (MODO === "cluster" && cluster.isPrimary) {
     })
     app.use(multer({ storage }).single('photo'))
 
-    app.use(session({
+    let middlewareSession = session({
         store: MongoStore.create({mongoUrl: 'mongodb://localhost:27017/backendSession'}),
         secret: 'c0d3r',
         resave: true,
-        cookie: {maxAge: 60000},
+        cookie: {maxAge: 600000},
         saveUninitialized: true
-    }))
+    })
+
+    app.use(middlewareSession)
 
     initializePassport()
     app.use(passport.initialize())
     app.use(passport.session())
 
     passport.use(googleStrategy)
+
+  
 
 
 
@@ -81,7 +121,7 @@ if (MODO === "cluster" && cluster.isPrimary) {
     app.use('/user', userRouter)
     app.use('/cart', cartRouter)
     app.use('/order', orderRouter)
-
+    app.use('/chat', chatRouter)
     app.get('/', (req, res) => {
         res.redirect('/dashboard')
     })
@@ -104,9 +144,38 @@ if (MODO === "cluster" && cluster.isPrimary) {
 
     //RUTAS NO DEFINIDAS
 
-app.use((req, res) => {
-    logger.warn(`Ruta no encontrada: ${req.originalUrl}`);
-    res.status(404).send("Ruta no encontrada");
+    app.use((req, res) => {
+        logger.warn(`Ruta no encontrada: ${req.originalUrl}`);
+        res.status(404).send("Ruta no encontrada");
 
-});
+    });
+
+    /* WEBSOCKET */
+
+    const io = new Server(server)
+
+  
+
+    // Configurar middleware de sesión compartida para socket.io
+    io.use(sharedSession(middlewareSession))
+   
+    io.on('connection', async socket => {
+        let user = {username: socket.handshake.session.passport?.user?.username, photo: socket.handshake.session.passport?.user?.photo}
+        let chat = await chatService.getAll()
+        socket.emit('history', {chat, user}) 
+        
+        socket.on('message', async data => {
+            let newData = data 
+            let timestamp = new Date().toLocaleString() 
+            newData.timestamp = timestamp
+            await chatService.addChat(data)  
+            io.emit('newMessage', newData)
+        })
+        
+    })
+
+
+
 }
+
+  

@@ -1,5 +1,6 @@
 
 import path from 'path'
+import { logger } from '../winston.js';
 
 const __dirname = path.resolve();
 

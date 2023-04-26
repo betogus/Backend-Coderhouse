@@ -1,0 +1,15 @@
+paths:
+  /products:
+    get:
+      summary: Consulta la lista completa de productos
+      tags:
+        - Product
+      responses:
+        "200":
+          description: 'Lista de productos encontrada'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'

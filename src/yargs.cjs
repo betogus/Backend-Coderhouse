@@ -13,20 +13,17 @@ const argv = yargs
         describe: 'Modo de inicio de la aplicación',
         type: 'string',
         choices: ['fork', 'cluster'],
-        default: 'fork'
+        
     })
     .argv;
 
 if (argv.modo === 'cluster') {
-    console.log('Iniciando en modo cluster...');
     MODO = "cluster"
-} else {
-    console.log('Iniciando en modo fork...')
+} else if (argv.modo === "fork") {
     MODO = 'fork'
 }
 
 PORT = argv.port
-console.log(`Puerto: ${argv.port}`);
 
 yargs.parse()
 

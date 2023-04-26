@@ -19,7 +19,7 @@ export const logger = winston.createLogger({
         }),
         new winston.transports.File({
             filename: './src/winston/warning.log',
-            level: 'warning',
+            level: 'warn',
             format: winston.format.combine(
                 winston.format.colorize(),
                 winston.format.simple()

@@ -1,0 +1,22 @@
+paths:
+  /products/{id}:
+    get:
+      summary: Obtener un producto por su ID
+      tags:
+        - Product
+      parameters:
+        - in: path
+          name: id
+          description: ID del producto a obtener
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 123
+      responses:
+        "200":
+          description: 'Producto encontrado'
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Product'

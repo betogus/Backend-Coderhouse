@@ -205,5 +205,14 @@
     "hayStock": true,
     "categoryId": 3,
     "timestamp": "18/4/2023, 22:32:36"
+  },
+  {
+    "id": 51,
+    "name": "GARBANZO",
+    "precio100gr": 12,
+    "precioKg": 35,
+    "hayStock": false,
+    "categoryId": 2,
+    "timestamp": "21/4/2023, 11:35:22"
   }
 ]

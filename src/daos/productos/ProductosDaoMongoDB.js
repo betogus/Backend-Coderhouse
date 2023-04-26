@@ -4,6 +4,6 @@ import { configMongo } from "../../options/db.config.js"
 
 export default class ProductosDaoMongoDB extends ContenedorMongoDB {
     constructor() {
-        super(ProductModel, configMongo)
+        super(ProductModel/*, configMongo  */)
     }
 }

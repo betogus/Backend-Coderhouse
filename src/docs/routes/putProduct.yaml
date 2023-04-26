@@ -1,0 +1,29 @@
+paths:
+  /products/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: ID del producto a actualizar o eliminar
+        required: true
+        type: integer
+        format: int64
+    put:
+      summary: Actualizar un producto existente por su ID
+      tags:
+        - Product
+      parameters:
+        - in: body
+          name: body
+          description: Campos del producto a actualizar
+          required: true
+          schema:
+            $ref: '#/components/schemas/Product'
+      responses:
+        "200":
+          description: 'Producto actualizado'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        "401":
+          description: 'No autorizado'

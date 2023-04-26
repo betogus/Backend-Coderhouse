@@ -1,0 +1,15 @@
+paths:
+  /products:
+    post:
+      summary: Crear un nuevo producto
+      tags:
+        - Product
+      responses:
+        "201":
+          description: 'Producto creado'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        "401":
+          description: 'No autorizado'

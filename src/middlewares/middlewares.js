@@ -3,11 +3,20 @@ export const isAuth = (req, res, next) => {
     else res.redirect("/auth/login")
 }
 
+
+
 import { createTransport } from "nodemailer";
 import dotenv from 'dotenv'
 
 dotenv.config()
 
+export const isAdmin = (req, res, next) => {
+    if (process.env.ADMIN !== "true") {
+        res.status(401).send('No tiene los permisos necesarios')
+    } else {
+        next()
+    }
+}
 
 export const transporter = createTransport({
     service: 'gmail',
@@ -47,21 +56,6 @@ export const etherealMail = async (req, res, next) => {
     
 } 
 
-export const twilioMsg = async (req, res, next) => {
-    const client = twilio(process.env.TWILIO_ACCOUNT, process.env.TWILIO_TOKEN)
-    try {
-        const message = await client.messages.create({
-            body: `Su registro fue exitoso! Su usuario es ${user.username} y su contraseña es ${user.password}`,
-            from: '+12762959575', //ponemos el numero generado en la pagina
-            to: `${user.phone}` //ej +543512811582
-        })
-        console.log(message)
-        next()
-    } catch (error) {
-        console.log(error)
-    }
-    
-}
 
 export const validateFields = async (req, res, next) => {
     let user = req.body
@@ -110,7 +104,7 @@ export async function enviarEmail(userId, productosEnElCarrito)  {
             }
         });
         //twilio
-        /* if (user.phone) {
+        if (user.phone) {
             const accountSid = process.env.TWILIO_ACCOUNT_SID;
             const authToken = process.env.TWILIO_AUTH_TOKEN;
             const client = twilio(accountSid, authToken);
@@ -121,7 +115,7 @@ export async function enviarEmail(userId, productosEnElCarrito)  {
                     to: `whatsapp:+54351${user.phone}`
                 })
                 .then(message => console.log(message.sid));
-        }  */
+        }  
     })
     
 }

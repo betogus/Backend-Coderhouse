@@ -1,0 +1,37 @@
+components:
+    schemas:
+        Product:
+            type: object
+            properties: 
+                id: 
+                  type: number
+                  description: Si no lo proporciona, se genera automáticamente
+                name:
+                    type: string
+                    description: Nombre del producto
+                precio100gr:
+                    type: number
+                    description: Precio del producto (100gr)
+                precioKg:
+                    type: number
+                    description: Precio del producto (por Kg)
+                hayStock:
+                    type: boolean
+                    description: Define si hay o no stock
+                categoryId:
+                    type: integer
+                    description: Está asociado a una categoría. Puede ir de 1 a 5.
+            required:
+                - name
+                - precio100gr
+                - precioKg
+                - hayStock
+                - categoryId
+            example:
+                id: 51 
+                name: GARBANZO
+                precio100gr: 12
+                precioKg: 35
+                hayStock: false
+                categoryId: 2
+      
