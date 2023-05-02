@@ -12,5 +12,5 @@ export default {
     API_PERSISTENCE: process.env.API_PERSISTENCE || "MEMORY",
     CART_PERSISTENCE: process.env.CART_PERSISTENCE || "MEMORY",
     CHAT_PERSISTENCE: process.env.CHAT_PERSISTENCE || "MEMORY",
-    MODO: process.env.MODO || "cluster"
+    MODO: process.env.MODO || "fork"
 }

@@ -5,19 +5,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Error</title>
+    <title><%= title %></title>
 </head>
 
 <body>
     <div id="container">
         <div id="title">
-            <h1>Register Error</h1>
+            <h1><%= title %></h1>
         </div>
-        <h2>El usuario y/o email ya existen</h2>
-        <div id="registerBtn" onclick="location.href = '/auth/register'">Registrarse</div>
+        <h2><%= detail %></h2>
+        <div id="loginBtn" onclick="location.href = '/auth/login'">Loguearse</div>
     </div>
     <style>
-        #registerBtn {
+        #loginBtn {
             background-color: rgb(101, 65, 245);
             padding: 0px 10px;
             width: 300px;
@@ -34,10 +34,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: rgb(26,26,47);
+            background-color: rgb(26, 26, 47);
         }
 
-        #title, h2 {
+        #title,
+        h2 {
             color: #fff;
         }
 
@@ -51,7 +52,6 @@
             justify-content: space-around;
             align-items: center;
         }
-
     </style>
 </body>
 

@@ -12,6 +12,46 @@ mongod --dbpath “C:\Program Files\MongoDB\miBaseDeDatos”
 
 ![video](src/assets/video.gif)
 
+
+## RUTAS
+
+> /config
+
+Nos permite ver las configuraciones externas de acuerdo a si iniciamos en modo desarrollo (con npm run dev o npm run watch), o en modo producción (con npm run prod)
+
+> /dashboard
+
+Accedemos a la lista de productos
+
+> /auth
+> > /auth/login
+> > /auth/register
+
+> /products
+
+Accedemos como data on wire (utilizando por ej. thunderClient) a los productos, y si somos administradores (a través de una variable de entorno llamada ADMIN) podemos manipular la lista de productos. Para evitar conflicto con los productos que se encuentran en las vistas (/dashboard), se almacenan por separado.
+
+> /user
+
+Accedemos a los datos del usuario.
+
+> /cart
+
+Accedemos a los productos almacenados en el carrito
+
+> /order
+
+Accedemos a las compras confirmadas
+
+> /chat
+
+Accedemos al chat
+
+> /info
+
+Accedemos a datos de nuestra CPU (nucleos, memoria usada, procesos, etc.)
+
+
 ##  PERSISTENCIA
 
 > PRODUCTOS

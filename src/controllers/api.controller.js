@@ -20,6 +20,21 @@ export const postApi = async (req, res) => {
     } 
 }
 
+export const getApiByCategory = async (req, res) => {
+    let {categoryId} = req.params
+    try {
+        let result = await apiService.getProductsByCategory(categoryId)
+        if (result.length > 0) {
+            res.status(200).send(result)
+        } else {
+            res.status(204).send()
+        }
+        
+    } catch (err) {
+        res.status(400).send(err)
+    }
+}
+
 export const putApi = async (req, res) => {
     let {id} = req.params
     let product = req.body

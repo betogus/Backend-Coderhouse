@@ -20,17 +20,17 @@ import cartRouter from './routes/cartRouter.js'
 import chatRouter from './routes/chatRouter.js'
 import { logger } from './winston.js'
 import orderRouter from './routes/orderRouter.js'
+import configRouter from './routes/configRouter.js'
 import config from './options/env.config.js'
 import cors from 'cors'
 import swaggerJSDoc from 'swagger-jsdoc'
 import swaggerUI from 'swagger-ui-express'
-import { getUser } from './controllers/user.controller.js'
 import { chatService } from './services/chat.service.js'
 import sharedSession from 'express-socket.io-session'
-import { users } from './models/User.js'
 import compression from 'compression'
-
+import dotenv from 'dotenv'
 /* CONFIGURACION */
+dotenv.config()
 const app = express()
 let modo = MODO;
 if (config.NODE_ENV=="dev") app.use(cors())
@@ -61,9 +61,11 @@ if (modo === "cluster" && cluster.isPrimary) {
     app.use(express.static('public'))
     app.use('/uploads', express.static('./public/database/uploads'))
     app.engine('handlebars', handlebars.engine())
-    app.set('views', './public/views/handlebars')
+    app.set('views', './public/views')
+    
     app.set('view engine', 'handlebars')
-
+    app.set('view engine', 'pug');
+    app.set('view engine', 'ejs');
 
     /* SWAGGER */
     const swaggerSpec = {
@@ -93,12 +95,12 @@ if (modo === "cluster" && cluster.isPrimary) {
         }
     })
     app.use(multer({ storage }).single('photo'))
-
+    let maxAge = parseInt(process.env.MAX_AGE) || 60000; 
     let middlewareSession = session({
         store: MongoStore.create({mongoUrl: 'mongodb://localhost:27017/backendSession'}),
         secret: 'c0d3r',
         resave: true,
-        cookie: {maxAge: 600000},
+        cookie: {maxAge: maxAge},
         saveUninitialized: true
     })
 
@@ -122,6 +124,7 @@ if (modo === "cluster" && cluster.isPrimary) {
     app.use('/cart', cartRouter)
     app.use('/order', orderRouter)
     app.use('/chat', chatRouter)
+    app.use('/config', configRouter)
     app.get('/', (req, res) => {
         res.redirect('/dashboard')
     })
@@ -160,7 +163,7 @@ if (modo === "cluster" && cluster.isPrimary) {
     io.use(sharedSession(middlewareSession))
    
     io.on('connection', async socket => {
-        let user = {username: socket.handshake.session.passport?.user?.username, photo: socket.handshake.session.passport?.user?.photo}
+        let user = {username: socket.handshake.cookies.user?.username, photo: socket.handshake.cookies.user?.photo}
         let chat = await chatService.getAll()
         socket.emit('history', {chat, user}) 
         

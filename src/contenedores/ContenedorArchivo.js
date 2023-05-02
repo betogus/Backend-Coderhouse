@@ -61,6 +61,23 @@ export default class ContenedorArchivo {
         }
     }
 
+    async getByCategoryId(id) {
+        if (fs.existsSync(this.pathToFile)) {
+            try {
+                const datas = await fs.promises.readFile(this.pathToFile, 'utf-8')
+                const dataJs = JSON.parse(datas)
+                const data = dataJs.filter(item => item.categoryId === parseInt(id))
+                if (data.length === 0) return "No hay coincidencias en el archivo " + this.pathToFile
+                return data
+            } catch {
+                return "No hay coincidencias en el archivo " + this.pathToFile
+            }
+        } else {
+            return "No existe el archivo " + this.pathToFile
+        }
+    }
+
+
     async getByUsername(username) {
         if (fs.existsSync(this.pathToFile)) {
             try {

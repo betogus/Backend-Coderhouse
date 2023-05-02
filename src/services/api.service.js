@@ -22,6 +22,10 @@ class ApiService {
         return await this.productDao.getById(id)
     }
 
+    getProductsByCategory = async (id) => {
+        return await this.productDao.getByCategoryId(id)
+    }
+
     deleteProduct = async(id) => {
         return await this.productDao.delete(id)
     }

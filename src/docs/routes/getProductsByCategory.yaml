@@ -1,0 +1,22 @@
+paths:
+  /products/category/{categoryId}:
+    get:
+      summary: Obtener los productos por su categoría
+      tags:
+        - Product
+      parameters:
+        - in: path
+          name: id
+          description: ID de la categoría de productos a obtener
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 123
+      responses:
+        "200":
+          description: 'Productos encontrados'
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Product'

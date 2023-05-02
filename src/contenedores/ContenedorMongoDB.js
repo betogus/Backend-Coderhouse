@@ -64,6 +64,23 @@ export default class ContenedorMongoDB {
 
     }
 
+    getByCategoryId = async (categoryId) => {
+        try {
+            let data = await this.model.find({
+                categoryId: parseInt(categoryId)
+            })
+            if (!data) return {
+                message: "No hubo coincidencias"
+            }
+            return data
+        } catch (err) {
+            return {
+                message: "No hubo coincidencias"
+            }
+        }
+
+    }
+
     delete = async (id) => {
         try {
             await this.model.deleteOne({_id: id})

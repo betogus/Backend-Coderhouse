@@ -18,6 +18,9 @@ export default class ContenedorFirebase {
         return {...data.data(), id:data.id}
     }
 
+    
+
+     
     async getByUsername(username) {
         if (!this.collection) return {message: "No existe la BD"}
         const querySnapshot = await this.db.collection(this.collection).where('username', "==", username).get()

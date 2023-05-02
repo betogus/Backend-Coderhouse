@@ -1,4 +1,7 @@
 import { PRODUCTS } from "./database/archivos/productos.js";
+
+
+
 let productosEnElCarrito = JSON.parse(localStorage.getItem("productos")) || [];
 let agregarAlCarrito = document.getElementById('products-container')
 agregarAlCarrito.onclick = e => {

@@ -28,6 +28,14 @@ export default class ContenedorMemoria {
         return data
     }
 
+     getByCategoryId(categoryId) {
+         let data = this.array.filter(item => item.categoryId === parseInt(categoryId))
+         if (!data) return {
+             message: "No hay coincidencias"
+         }
+         return data
+     }
+
     getAll() {
         if (this.array.length === 0) return {message: "No hay datos"}
         return this.array

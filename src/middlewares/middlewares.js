@@ -1,14 +1,78 @@
-export const isAuth = (req, res, next) => {
-    if (req.session?.user && req.cookies?.user_sid) return next()
-    else res.redirect("/auth/login")
+
+import { users} from "../models/User.js";;
+import twilio from 'twilio'
+import jwt  from "jsonwebtoken";
+import { createHash, isValid } from "../../utils.js";
+import {  createTransport } from "nodemailer";
+import dotenv from 'dotenv'
+
+
+dotenv.config()
+
+export const isAuth = ((req, res, next) => {
+    const auth = req.cookies?.token || req.session?.token
+    if (!auth || auth === null) {
+        return res.redirect('/auth/login')
+    }
+    let token = auth
+    jwt.verify(token, 'c0d3r', (error, decoded) => {
+        if (error) return res.redirect('/auth/login')
+        else req.user = decoded.user
+    })
+    next()
+})
+
+export const generarToken = (user) => {
+    let {username} = user
+    let token = jwt.sign({username}, 'c0d3r', {
+        expiresIn: '24h'
+    })
+    return token
+}
+
+export const authPostRegisterMiddleware = async (req, res, next) => {
+    let username = req.body.username
+    let user = await users.findOne({username})
+    if (!user) {
+        const newUser = {
+            username: req.body.username,
+            password: createHash(req.body.password),
+            email: req.body.email,
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            age: req.body.age,
+            address: req.body.address,
+            phone: req.body.phone,
+            photo: req.file.filename
+        }
+        await users.create(newUser)
+        const accessToken = generarToken(req.body)
+        req.session.user = newUser
+        res.cookie('user', newUser)
+        req.session.token = accessToken
+        res.cookie('token', accessToken)
+        next()
+    } 
+    else {
+        res.redirect('/auth/registerError')
+    } 
+}
+
+export const authPostLoginMiddleware = async (req, res, next) => {
+    let {username, password} = req.body
+    let user = await users.findOne({username})
+    if (!user || !isValid(user, password)) {
+      return res.redirect('/auth/loginError');
+    }
+    req.session.user = user
+    res.cookie('user', user)
+    const accessToken = generarToken(req.body)
+    req.session.token = accessToken
+    res.cookie('token', accessToken)
+    next()
 }
 
 
-
-import { createTransport } from "nodemailer";
-import dotenv from 'dotenv'
-
-dotenv.config()
 
 export const isAdmin = (req, res, next) => {
     if (process.env.ADMIN !== "true") {
@@ -53,8 +117,8 @@ export const etherealMail = async (req, res, next) => {
     } catch (error) {
         console.log(error)
     }
-    
-} 
+
+}
 
 
 export const validateFields = async (req, res, next) => {
@@ -69,11 +133,9 @@ export const validateFields = async (req, res, next) => {
     }
 }
 
-import { users } from "../models/User.js";;
-import twilio from 'twilio'
 
 
-export async function enviarEmail(userId, productosEnElCarrito)  {
+export async function enviarEmail(userId, productosEnElCarrito) {
     const user = await users.findById(userId);
     let contenidoEmail = `
         <h3>Productos a enviar: <h3>
@@ -115,9 +177,9 @@ export async function enviarEmail(userId, productosEnElCarrito)  {
                     to: `whatsapp:+54351${user.phone}`
                 })
                 .then(message => console.log(message.sid));
-        }  
+        }
     })
-    
+
 }
 
 

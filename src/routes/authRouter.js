@@ -1,19 +1,18 @@
 import { Router } from "express";
 import passport from "passport";
-import { etherealMail } from "../middlewares/middlewares.js";
+import { authPostLoginMiddleware, authPostRegisterMiddleware, etherealMail } from "../middlewares/middlewares.js";
 import { clearCookies, getGoogle, getLogin, getLoginError, getLogout, getRegister, getRegisterError, postLogin, postRegister } from "../controllers/auth.controller.js";
 
 const router = Router()
 
+
 router.get('/register', getRegister)
 
-router.post('/register', passport.authenticate('register', 
-{failureRedirect: '/auth/registerError'}), etherealMail, postRegister)
+router.post('/register', authPostRegisterMiddleware,  etherealMail,  postRegister)
 
 router.get('/login', getLogin)
 
-router.post('/login', passport.authenticate('login',
-{failureRedirect: '/auth/loginError'}), postLogin)
+router.post('/login', authPostLoginMiddleware,  postLogin )
 
 router.get('/logout', getLogout)
 

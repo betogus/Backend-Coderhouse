@@ -31,3 +31,24 @@
 [31merror[39m: no se obtuvo de la base de datos los chats
 [31merror[39m: no se obtuvo de la base de datos los chats
 [31merror[39m: no se obtuvo de la base de datos los chats
+[33mwarn[39m: Ruta no encontrada: /favicon.ico
+[33mwarn[39m: Ruta no encontrada: /auth/register
+[33mwarn[39m: Ruta no encontrada: /a
+[33mwarn[39m: Ruta no encontrada: /auth/login
+[33mwarn[39m: Ruta no encontrada: /d
+[33mwarn[39m: Ruta no encontrada: /login
+[33mwarn[39m: Ruta no encontrada: /login
+[33mwarn[39m: Ruta no encontrada: /login
+[33mwarn[39m: Ruta no encontrada: /login
+[33mwarn[39m: Ruta no encontrada: /dashboard/
+[33mwarn[39m: Ruta no encontrada: /dashboard
+[33mwarn[39m: Ruta no encontrada: /currentUser
+[33mwarn[39m: Ruta no encontrada: /currentUser
+[33mwarn[39m: Ruta no encontrada: /config/env
+[33mwarn[39m: Ruta no encontrada: /config/dev
+[33mwarn[39m: Ruta no encontrada: /productos
+[33mwarn[39m: Ruta no encontrada: /api/productos
+[33mwarn[39m: Ruta no encontrada: /api/productos
+[33mwarn[39m: Ruta no encontrada: /products/category/2
+[33mwarn[39m: Ruta no encontrada: /products/category/2
+[33mwarn[39m: Ruta no encontrada: /products/ccategory/category/2
